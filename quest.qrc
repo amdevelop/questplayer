@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>quest.js</file>
+        <file>qml/qestplayer/main.qml</file>
+    </qresource>
+</RCC>
