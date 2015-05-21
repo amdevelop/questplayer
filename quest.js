@@ -276,3 +276,16 @@ function showDetail(item_data, startX, startY)
 
 //    number_anim.start();
 }
+
+
+//////////////////////////////////////////
+
+function initStoriesMenu()
+{
+    var stories = JSON.parse(container.stories_json);
+    var i = 0;
+    for(i = 0; i < stories.length; i++)
+    {
+        stories_model.append(stories[i]);
+    }
+}

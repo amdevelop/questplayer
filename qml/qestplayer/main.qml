@@ -12,7 +12,15 @@ Rectangle {
     focus: true
 
     property bool can_check_collisions: true
+
     property string quest_json: ""
+    property string episodes_json: ""
+    property string stories_json: ""
+
+    onStories_jsonChanged:
+    {
+        QuestJs.initStoriesMenu();
+    }
 
     onQuest_jsonChanged:
     {
@@ -20,6 +28,10 @@ Rectangle {
 
         quest_menu.visible = true;
         anim.start();
+    }
+
+    onEpisodes_jsonChanged: {
+        console.log(episodes_json);
     }
 
     Keys.onPressed: {
@@ -333,8 +345,68 @@ Rectangle {
         }
     }
 
-    Component.onCompleted:
-    {
+    Rectangle {
+     id: stories_view
 
+     color: "black"
+
+     width: parent.width
+     height: parent.height
+
+     Component {
+         id: contactDelegate
+         Item {
+             width: parent.width; height: 40
+
+             property string story_id: id
+
+             Image {
+
+                 x: 10
+                 y: 10
+
+                 height: parent.height - 10 * 2
+                 width: parent.height - 10 * 2
+
+                 source: cover
+             }
+
+             Text { text: title
+                 color: "white"
+                 anchors.verticalCenter: parent.verticalCenter
+             }
+
+             MouseArea {
+                 width: parent.width
+                 height: parent.height
+
+                 onClicked: {
+                     stories_listview.currentIndex = index;
+//                     console.log(story_id)
+                     container.getStoryManifest(story_id)
+
+                 }
+             }
+         }
+     }
+
+     ListModel {
+         id: stories_model
+     }
+
+     ListView {
+
+         id: stories_listview
+
+         width: 180
+         height: parent.height
+         anchors.right: parent.right
+         model: stories_model
+         delegate: contactDelegate
+         highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+         focus: true
+     }
     }
+
+    signal getStoryManifest(string story_id)
 }

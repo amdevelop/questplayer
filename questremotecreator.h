@@ -9,6 +9,8 @@ class QuestRemoteCreator : public QObject
 {
     Q_OBJECT
 
+    QString m_current_property;
+
     QNetworkAccessManager *m_man;
 
     QObject *m_declarative_root_object;
@@ -21,7 +23,7 @@ public:
 
 public slots:
     void slotFinished(QNetworkReply*);
-    
+    void slotGetStoryManifest(QString);
 };
 
 #endif // QUESTREMOTECREATOR_H
