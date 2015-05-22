@@ -62,8 +62,8 @@ var quest_data;
 //        "cover" : "detective.jpg",
 //        "title" : "Episode 1" } };
 
-var quest_path = "file:quest";
-//var quest_path = "http://quest:8888/quests/best_story/1/";
+//var quest_path = "file:quest";
+var quest_path =  ""; // "http://quest:8888/quests/";
 
 var current_act = null;
 var current_scene = null;
@@ -282,7 +282,21 @@ function showDetail(item_data, startX, startY)
 
 function initStoriesMenu()
 {
+    stories_model.clear();
+
     var stories = JSON.parse(container.stories_json);
+    var i = 0;
+    for(i = 0; i < stories.length; i++)
+    {
+        stories_model.append(stories[i]);
+    }
+}
+
+function initEpisodesMenu()
+{
+    stories_model.clear();
+
+    var stories = JSON.parse(container.episodes_json);
     var i = 0;
     for(i = 0; i < stories.length; i++)
     {

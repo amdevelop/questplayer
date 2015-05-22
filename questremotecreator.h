@@ -24,6 +24,7 @@ public:
 public slots:
     void slotFinished(QNetworkReply*);
     void slotGetStoryManifest(QString);
+    void slotGetEpisodeData(QString);
 };
 
 #endif // QUESTREMOTECREATOR_H

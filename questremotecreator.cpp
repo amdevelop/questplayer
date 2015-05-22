@@ -15,6 +15,10 @@ QuestRemoteCreator::QuestRemoteCreator(const QString & quest_request, QObject *d
             SIGNAL(getStoryManifest(QString)),
             SLOT(slotGetStoryManifest(QString)));
 
+    connect(m_declarative_root_object,
+            SIGNAL(getEpisodeData(QString)),
+            SLOT(slotGetEpisodeData(QString)));
+
     m_man = new QNetworkAccessManager(this);
     connect(m_man,
             SIGNAL(finished(QNetworkReply*)),
@@ -31,16 +35,23 @@ QuestRemoteCreator::~QuestRemoteCreator()
 void QuestRemoteCreator::slotFinished(QNetworkReply* reply)
 {
     m_declarative_root_object->setProperty(m_current_property.toLatin1(),
-                                           QString(reply->readAll()));
+                                           QString::fromUtf8(reply->readAll()));
 }
 
 void QuestRemoteCreator::slotGetStoryManifest(QString story)
 {
-    qDebug() << "lol" <<story;
     m_current_property = "episodes_json";
     m_man->get(QNetworkRequest(QUrl("http://quest:8888/quests/" +
                                     story +
                                     "/story_manifest.json")));
 
+}
+
+void QuestRemoteCreator::slotGetEpisodeData(QString path)
+{
+    m_current_property = "quest_json";
+    m_man->get(QNetworkRequest(QUrl("http://quest:8888/quests/" +
+                                    path +
+                                    "/quest.json")));
 }
 

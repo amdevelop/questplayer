@@ -6,8 +6,8 @@ import "qrc:/quest.js" as QuestJs
 Rectangle {
 
     id: container
-//    width: 300
-//    height: 200
+    //    width: 300
+    //    height: 200
 
     focus: true
 
@@ -24,18 +24,28 @@ Rectangle {
 
     onQuest_jsonChanged:
     {
+        QuestJs.quest_path = "http://quest:8888/quests/" +
+                stories_view.path;
+
         QuestJs.initQuest();
+
+        stories_view.visible = false;
 
         quest_menu.visible = true;
         anim.start();
     }
 
     onEpisodes_jsonChanged: {
-        console.log(episodes_json);
+        stories_view.mode = "episodes";
+        QuestJs.initEpisodesMenu();
+
+        //        console.log(episodes_json);
     }
 
     Keys.onPressed: {
         if (event.key === Qt.Key_Escape) {
+
+            console.log("123");
             if(quest_menu.visible)
                 quest_menu.visible = false;
             else
@@ -48,6 +58,7 @@ Rectangle {
             event.accepted = true;
         }
         else if (event.key === Qt.Key_Tab) {
+            console.log("321");
             if(item_menu.visible)
                 item_menu.visible = false;
             else
@@ -293,8 +304,8 @@ Rectangle {
         }
 
         Text {
-//            width: parent.width - parent.border.width * 2
-//            height: parent.height - parent.border.width * 2
+            //            width: parent.width - parent.border.width * 2
+            //            height: parent.height - parent.border.width * 2
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
@@ -345,68 +356,140 @@ Rectangle {
         }
     }
 
+
     Rectangle {
-     id: stories_view
+        id: stories_view
 
-     color: "black"
+        color: "black"
 
-     width: parent.width
-     height: parent.height
+        width: parent.width
+        height: parent.height
 
-     Component {
-         id: contactDelegate
-         Item {
-             width: parent.width; height: 40
+        property string mode: "stories"
+        property string path_story_id: ""
+        property string path_episode_id: ""
+        property string path: path_story_id + "/" + path_episode_id
 
-             property string story_id: id
+        Image {
+            x:0
+            y:0
+            id: story_cover
+        }
 
-             Image {
+        Component {
+            id: contactDelegate
+            Item {
+                width: parent.width; height: 40
 
-                 x: 10
-                 y: 10
+                property string story_id: id
 
-                 height: parent.height - 10 * 2
-                 width: parent.height - 10 * 2
+                property string story_cover_id: cover
 
-                 source: cover
-             }
+//                Image {
 
-             Text { text: title
-                 color: "white"
-                 anchors.verticalCenter: parent.verticalCenter
-             }
+//                    x: 10
+//                    y: 10
 
-             MouseArea {
-                 width: parent.width
-                 height: parent.height
+//                    height: parent.height - 10 * 2
+//                    width: parent.height - 10 * 2
 
-                 onClicked: {
-                     stories_listview.currentIndex = index;
-//                     console.log(story_id)
-                     container.getStoryManifest(story_id)
+//                    source: cover
+//                }
 
-                 }
-             }
-         }
-     }
+                Text { text: title
+                    color: "white"
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
 
-     ListModel {
-         id: stories_model
-     }
+                MouseArea {
+                    width: parent.width
+                    height: parent.height
 
-     ListView {
+                    onClicked: {
+                        console.log(stories_view.mode);
 
-         id: stories_listview
+                        if(stories_view.mode === "stories")
+                        {
+                            stories_listview.currentIndex = index;
 
-         width: 180
-         height: parent.height
-         anchors.right: parent.right
-         model: stories_model
-         delegate: contactDelegate
-         highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
-         focus: true
-     }
+                            stories_view.path_story_id = story_id;
+
+                            story_cover.source = parent.story_cover_id;
+
+                            story_cover.width = stories_view.width;
+                            story_cover.height = stories_view.height;
+                        }
+                        else if(stories_view.mode === "episodes")
+                        {
+                            stories_listview.currentIndex = index;
+
+                            stories_view.path_episode_id = story_id;
+                            story_cover.source = "http://quest:8888/quests/" +
+                                    stories_view.path + "/" +
+                                    parent.story_cover_id;
+
+                            console.log("http://quest:8888/quests/" +
+                                        stories_view.path + "/" +
+                                        parent.story_cover_id);
+                            story_cover.width = stories_view.width;
+                            story_cover.height = stories_view.height;
+                        }
+                    }
+                }
+            }
+        }
+
+        ListModel {
+            id: stories_model
+        }
+
+        ListView {
+            id: stories_listview
+
+            width: 180
+            height: parent.height
+            anchors.right: parent.right
+            model: stories_model
+            delegate: contactDelegate
+            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+            //focus: true
+        }
+
+        Rectangle {
+            width: 180
+            height: 80
+
+            x: parent.width - 180
+            y: parent.height - 80
+
+            color: "lightsteelblue";
+            radius: 5
+            Text {
+                text: "Play!"
+                color: "white"
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            MouseArea {
+                width: parent.width
+                height: parent.height
+
+                onClicked: {
+                    if(stories_view.mode === "stories")
+                        container.getStoryManifest(stories_view.path)
+                    else if(stories_view.mode === "episodes")
+                    {
+                        console.log("lol "  + stories_view.path);
+                        container.getEpisodeData(stories_view.path)
+                    }
+                }
+            }
+        }
     }
 
     signal getStoryManifest(string story_id)
+    signal getEpisodeData(string path)
+
 }
