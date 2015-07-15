@@ -16,6 +16,9 @@ Rectangle {
     property string quest_json: ""
     property string episodes_json: ""
     property string stories_json: ""
+    property string server_name: ""
+
+    property string path_separator: "/"
 
     onStories_jsonChanged:
     {
@@ -24,7 +27,8 @@ Rectangle {
 
     onQuest_jsonChanged:
     {
-        QuestJs.quest_path = "http://quest:8888/quests/" +
+        QuestJs.quest_path = server_name +
+                path_separator +
                 stories_view.path;
 
         QuestJs.initQuest();
@@ -38,8 +42,6 @@ Rectangle {
     onEpisodes_jsonChanged: {
         stories_view.mode = "episodes";
         QuestJs.initEpisodesMenu();
-
-        //        console.log(episodes_json);
     }
 
     Keys.onPressed: {
@@ -368,7 +370,9 @@ Rectangle {
         property string mode: "stories"
         property string path_story_id: ""
         property string path_episode_id: ""
-        property string path: path_story_id + "/" + path_episode_id
+        property string path: path_story_id +
+                              path_separator +
+                              path_episode_id
 
         Image {
             x:0
@@ -407,14 +411,14 @@ Rectangle {
                     height: parent.height
 
                     onClicked: {
-                        console.log(stories_view.mode);
+//                        console.log(stories_view.mode);
 
                         if(stories_view.mode === "stories")
                         {
                             stories_listview.currentIndex = index;
 
                             stories_view.path_story_id = story_id;
-
+                            console.log("parent.story_cover_id " + parent.story_cover_id)
                             story_cover.source = parent.story_cover_id;
 
                             story_cover.width = stories_view.width;
@@ -425,13 +429,18 @@ Rectangle {
                             stories_listview.currentIndex = index;
 
                             stories_view.path_episode_id = story_id;
-                            story_cover.source = "http://quest:8888/quests/" +
-                                    stories_view.path + "/" +
+                            story_cover.source = server_name +
+                                    path_separator +
+                                    stories_view.path +
+                                    path_separator +
                                     parent.story_cover_id;
 
-                            console.log("http://quest:8888/quests/" +
-                                        stories_view.path + "/" +
+                            console.log(server_name +
+                                        path_separator +
+                                        stories_view.path +
+                                        path_separator +
                                         parent.story_cover_id);
+
                             story_cover.width = stories_view.width;
                             story_cover.height = stories_view.height;
                         }
@@ -453,7 +462,6 @@ Rectangle {
             model: stories_model
             delegate: contactDelegate
             highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
-            //focus: true
         }
 
         Rectangle {
@@ -478,7 +486,10 @@ Rectangle {
 
                 onClicked: {
                     if(stories_view.mode === "stories")
+                    {
+                        console.log("lol "  + stories_view.path);
                         container.getStoryManifest(stories_view.path)
+                    }
                     else if(stories_view.mode === "episodes")
                     {
                         console.log("lol "  + stories_view.path);
@@ -491,5 +502,4 @@ Rectangle {
 
     signal getStoryManifest(string story_id)
     signal getEpisodeData(string path)
-
 }

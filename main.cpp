@@ -27,14 +27,20 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     dv.setResizeMode(QDeclarativeView::SizeRootObjectToView);
     dv.setSource(QUrl("qrc:/qml/qestplayer/main.qml"));
 
-    QuestRemoteCreator creator("http://quest:8888/quests/quest_manifest.json",
-                               dv.rootObject());
+//    QuestRemoteCreator creator("quests",
+//                               "quest_manifest.json",
+//                               dv.rootObject(),
+//                               QuestRemoteCreator::ModeOffline);
+    QuestRemoteCreator creator("http://matal.ru/quests",
+                               "quest_manifest.json",
+                               dv.rootObject(),
+                               QuestRemoteCreator::ModeOnline);
 
-//    QFile file("quest/quest.json");
+//    QFile file(QString("quests") + QDir::separator() + QString("quest_manifest.json"));
 
 //    if(file.open(QIODevice::ReadOnly))
 //    {
-//        dv.rootObject()->setProperty("quest_json", file.readAll());
+//        dv.rootObject()->setProperty("stories_json", file.readAll());
 //    }
 //    else
 //        exit(1);

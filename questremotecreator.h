@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include <QtNetwork/QNetworkAccessManager>
+#include <QUrl>
 
 class QuestRemoteCreator : public QObject
 {
@@ -13,13 +14,31 @@ class QuestRemoteCreator : public QObject
 
     QNetworkAccessManager *m_man;
 
+    QString m_server_name;
+
     QObject *m_declarative_root_object;
+
+    QChar separator();
+    void getManifest(QString request);
+
 public:
-    explicit QuestRemoteCreator(const QString& quest_request,
+    enum WorkMode
+    {
+        ModeOnline,
+        ModeOffline
+    };
+
+    explicit QuestRemoteCreator(const QString& server_name,
+                                const QString& quest_request,
                                 QObject *declarative_root_object,
+                                WorkMode work_mode = QuestRemoteCreator::ModeOnline,
                                 QObject *parent = 0);
 
+
     ~QuestRemoteCreator();
+
+private:
+    WorkMode m_mode;
 
 public slots:
     void slotFinished(QNetworkReply*);

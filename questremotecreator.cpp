@@ -4,12 +4,37 @@
 
 #include <QDebug>
 
-QuestRemoteCreator::QuestRemoteCreator(const QString & quest_request, QObject *declarative_root_object, QObject *parent)
+#include <QFile>
+#include <QDir>
+
+QuestRemoteCreator::QuestRemoteCreator(const QString & server_name,
+                                       const QString & quest_request,
+                                       QObject *declarative_root_object,
+                                       WorkMode work_mode,
+                                       QObject *parent)
     : QObject(parent)
 {
+    m_server_name = server_name;
+    m_mode = work_mode;
+    m_declarative_root_object = declarative_root_object;
+
+    m_server_name+=separator();
+    m_declarative_root_object->setProperty("path_separator", separator());
+
+    switch (m_mode) {
+    case ModeOnline:
+        m_declarative_root_object->setProperty("server_name", server_name);
+        break;
+    case ModeOffline:
+        m_declarative_root_object->setProperty("server_name", "file:" + server_name);
+        break;
+    default:
+        m_declarative_root_object->setProperty("server_name", server_name);
+        break;
+    }
+
     m_current_property = "stories_json";
 
-    m_declarative_root_object = declarative_root_object;
 
     connect(m_declarative_root_object,
             SIGNAL(getStoryManifest(QString)),
@@ -24,13 +49,46 @@ QuestRemoteCreator::QuestRemoteCreator(const QString & quest_request, QObject *d
             SIGNAL(finished(QNetworkReply*)),
             SLOT(slotFinished(QNetworkReply*)));
 
-    m_man->get(QNetworkRequest(QUrl(quest_request)));
+    getManifest(quest_request);
+}
+
+QChar QuestRemoteCreator::separator()
+{
+    switch (m_mode) {
+    case ModeOnline:
+        return '/';
+    case ModeOffline:
+        return QDir::separator();
+    default:
+        return '/';
+    }
 }
 
 QuestRemoteCreator::~QuestRemoteCreator()
 {
     delete m_man;
 }
+
+void QuestRemoteCreator::getManifest(QString request)
+{
+    switch (m_mode) {
+    case ModeOnline:
+        m_man->get(QNetworkRequest(QUrl(m_server_name + request)));
+        break;
+    case ModeOffline:
+    {
+        QFile file(m_server_name + request);
+
+        if(file.open(QIODevice::ReadOnly))
+            m_declarative_root_object->setProperty(m_current_property.toLatin1(),
+                                                   QString::fromUtf8(file.readAll()));
+    }
+        break;
+    default:
+        break;
+    }
+}
+
 
 void QuestRemoteCreator::slotFinished(QNetworkReply* reply)
 {
@@ -41,17 +99,19 @@ void QuestRemoteCreator::slotFinished(QNetworkReply* reply)
 void QuestRemoteCreator::slotGetStoryManifest(QString story)
 {
     m_current_property = "episodes_json";
-    m_man->get(QNetworkRequest(QUrl("http://quest:8888/quests/" +
-                                    story +
-                                    "/story_manifest.json")));
+
+    getManifest(story +
+                separator() +
+                "story_manifest.json");
 
 }
 
 void QuestRemoteCreator::slotGetEpisodeData(QString path)
 {
     m_current_property = "quest_json";
-    m_man->get(QNetworkRequest(QUrl("http://quest:8888/quests/" +
-                                    path +
-                                    "/quest.json")));
+
+    getManifest(path +
+                separator() +
+                "quest.json");
 }
 

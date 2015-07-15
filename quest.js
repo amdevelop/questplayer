@@ -81,7 +81,7 @@ function initQuest()
 
     episode_title.text = quest_data.episode.title;
     episode_cover.source =
-            quest_path + "/" +
+            quest_path + container.path_separator +
 //            quest_data.episode.id + "/" +
             quest_data.episode.cover;
 }
@@ -184,9 +184,9 @@ function drawScene()
     item_model.clear();
 
     background_image.source =
-            quest_path + "/" +
-            current_act.id + "/" +
-            current_scene.id + "/" +
+            quest_path + container.path_separator +
+            current_act.id + container.path_separator +
+            current_scene.id + container.path_separator +
             current_scene.background;
     background_image.width = container.width;
     background_image.height = container.height;
@@ -258,10 +258,10 @@ function showDetail(item_data, startX, startY)
             item_data.detail !== "")
     {
     item_image.source =
-            quest_path + "/" +
-            current_act.id + "/" +
-            current_scene.id + "/" +
-            item_data.id + "/" +
+            quest_path + container.path_separator +
+            current_act.id + container.path_separator +
+            current_scene.id + container.path_separator +
+            item_data.id + container.path_separator +
             item_data.detail;
     item_image.visible = true;
     }
