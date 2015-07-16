@@ -7,6 +7,8 @@
 #include <QFile>
 #include <QDir>
 
+#include "defines.h"
+
 QuestRemoteCreator::QuestRemoteCreator(const QString & server_name,
                                        const QString & quest_request,
                                        QObject *declarative_root_object,
@@ -19,21 +21,29 @@ QuestRemoteCreator::QuestRemoteCreator(const QString & server_name,
     m_declarative_root_object = declarative_root_object;
 
     m_server_name+=separator();
-    m_declarative_root_object->setProperty("path_separator", separator());
+    m_declarative_root_object->setProperty(
+                P_PATH_SEPARATOR,
+                separator());
 
     switch (m_mode) {
     case ModeOnline:
-        m_declarative_root_object->setProperty("server_name", server_name);
+        m_declarative_root_object->setProperty(
+                    P_SERVER_NAME,
+                    server_name);
         break;
     case ModeOffline:
-        m_declarative_root_object->setProperty("server_name", "file:" + server_name);
+        m_declarative_root_object->setProperty(
+                    P_SERVER_NAME,
+                    "file:" + server_name);
         break;
     default:
-        m_declarative_root_object->setProperty("server_name", server_name);
+        m_declarative_root_object->setProperty(
+                    P_SERVER_NAME,
+                    server_name);
         break;
     }
 
-    m_current_property = "stories_json";
+    m_current_property = P_STORIES_JSON;
 
 
     connect(m_declarative_root_object,
@@ -98,20 +108,20 @@ void QuestRemoteCreator::slotFinished(QNetworkReply* reply)
 
 void QuestRemoteCreator::slotGetStoryManifest(QString story)
 {
-    m_current_property = "episodes_json";
+    m_current_property = P_EPISODES_JSON;
 
     getManifest(story +
                 separator() +
-                "story_manifest.json");
+                P_MANIFEST_STORY);
 
 }
 
 void QuestRemoteCreator::slotGetEpisodeData(QString path)
 {
-    m_current_property = "quest_json";
+    m_current_property = P_QUEST_JSON;
 
     getManifest(path +
                 separator() +
-                "quest.json");
+                P_MANIFEST_QUEST);
 }
 

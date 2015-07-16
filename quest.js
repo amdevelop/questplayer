@@ -303,3 +303,9 @@ function initEpisodesMenu()
         stories_model.append(stories[i]);
     }
 }
+
+function activateItem(index)
+{
+
+}
+

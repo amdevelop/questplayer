@@ -5,6 +5,8 @@
 
 #include "questremotecreator.h"
 
+#include "defines.h"
+
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
     QScopedPointer<QApplication> app(createApplication(argc, argv));
@@ -32,7 +34,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 //                               dv.rootObject(),
 //                               QuestRemoteCreator::ModeOffline);
     QuestRemoteCreator creator("http://matal.ru/quests",
-                               "quest_manifest.json",
+                               P_MANIFEST_MAIN,
                                dv.rootObject(),
                                QuestRemoteCreator::ModeOnline);
 

@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>quest.js</file>
         <file>qml/qestplayer/main.qml</file>
+        <file>qml/qestplayer/MenuButton.qml</file>
     </qresource>
 </RCC>

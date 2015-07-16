@@ -38,4 +38,5 @@ RESOURCES += \
 
 HEADERS += \
     polygonitem.h \
-    questremotecreator.h
+    questremotecreator.h \
+    defines.h

@@ -1,7 +1,9 @@
 import QtQuick 1.1
-//import QuestItems 1.0
+//import MenuButton 1.0
 
 import "qrc:/quest.js" as QuestJs
+
+//import ":/qml/qestplayer/MenuButton.qml" as MenuButton
 
 Rectangle {
 
@@ -46,8 +48,6 @@ Rectangle {
 
     Keys.onPressed: {
         if (event.key === Qt.Key_Escape) {
-
-            console.log("123");
             if(quest_menu.visible)
                 quest_menu.visible = false;
             else
@@ -60,7 +60,6 @@ Rectangle {
             event.accepted = true;
         }
         else if (event.key === Qt.Key_Tab) {
-            console.log("321");
             if(item_menu.visible)
                 item_menu.visible = false;
             else
@@ -91,10 +90,13 @@ Rectangle {
         }
     }
 
+    // ==== МЕНЮ ПАУЗЫ ====
+    // прямоугольник главного меню квеста (который выпадает при Esc)
     Rectangle
     {
         id: quest_menu
 
+        // потому что находится и выпадает сверху
         y: -height
 
         width: container.width
@@ -123,82 +125,96 @@ Rectangle {
             x: container.width / 2 - width / 2
         }
 
-        NumberAnimation on y { id: anim; from: -height; to: 0; duration: 450; easing.type: Easing.OutBounce}
+        // анимация падения
+        NumberAnimation on y {
+            id: anim;
+            from: -height;
+            to: 0;
+            duration: 450;
+            // собственно характер выпадания определяется
+            // этой курвой
+            easing.type: Easing.OutBounce}
 
-        Rectangle {
-            id: start_button
+        // кнопки упарвлеения меню
+        // должно быть три:
+        // Resume
+        // Main menu
+        // Exit
 
-            x: quest_menu.width / 2 - width / 2
-            y: (quest_menu.height - (28 * 2 + 10)) / 2 + 28 + 10
+        Column {
 
-            width: 110
-            height: 28
+            spacing: 10
 
-            color: "transparent"
-            border.color: "blue"
+            y:  parent.height * 0.3 +
+                (parent.height * 2 * 0.3 - height) / 2
 
-            radius: 3;
+            anchors.horizontalCenter: parent.horizontalCenter
 
-            Text{
-                text: "START"
-                color: parent.border.color
+            MenuButton {
+                id: start_button
 
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-            }
+                button_text: qsTr("Start")
 
-            MouseArea {
-                width: parent.width
-                height: parent.height
+                MouseArea {
+                    width: parent.width
+                    height: parent.height
 
-                hoverEnabled: true
+                    hoverEnabled: true
 
-                onClicked:
-                {
-                    QuestJs.startQuest();
-                    quest_menu.visible = false;
+                    onClicked:
+                    {
+                        QuestJs.startQuest();
+                        quest_menu.visible = false;
+                    }
+                    onEntered: parent.border.color = "green"
+                    onExited: parent.border.color = "blue"
                 }
-                onEntered: parent.border.color = "green"
-                onExited: parent.border.color = "blue"
-            }
-        }
-
-        Rectangle {
-            id: exit_button
-
-            x: quest_menu.width / 2 - width / 2
-            y: (quest_menu.height - (28 * 2 + 10)) / 2 + 2 * (28 + 10)
-
-            width: 110
-            height: 28
-
-            color: "transparent"
-            border.color: "blue"
-
-            radius: 3;
-
-            Text{
-                text: "EXIT"
-                color: parent.border.color
-
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
             }
 
-            MouseArea {
-                width: parent.width
-                height: parent.height
+            MenuButton {
+                id: main_menu_button
 
-                hoverEnabled: true
+                button_text: qsTr("Main menu")
 
-                onClicked: Qt.quit();
-                onEntered: parent.border.color = "green"
-                onExited: parent.border.color = "blue"
+                MouseArea {
+                    width: parent.width
+                    height: parent.height
 
+                    hoverEnabled: true
+
+                    onClicked:
+                    {
+                        QuestJs.startQuest();
+                        quest_menu.visible = false;
+                    }
+                    onEntered: parent.border.color = "green"
+                    onExited: parent.border.color = "blue"
+                }
+            }
+
+            MenuButton {
+                id: exit_button
+
+                button_text: qsTr("Exit")
+
+                MouseArea {
+                    width: parent.width
+                    height: parent.height
+
+                    hoverEnabled: true
+
+                    onClicked: Qt.quit();
+                    onEntered: parent.border.color = "green"
+                    onExited: parent.border.color = "blue"
+
+                }
             }
         }
     }
 
+    // ==== БОКОВОЕ МЕНЮ ====
+    // боковое меню, в котором отбражается список предметов,
+    // которые надо найти
     Rectangle
     {
         id: item_menu
@@ -249,6 +265,9 @@ Rectangle {
         }
     }
 
+
+    // ==== ПРОМЕЖУТОЧНЫЙ ЭКРАН ====
+    // черный экран описания акта/сцены
     Rectangle{
         id: info_view
 
@@ -275,11 +294,24 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
 
-            NumberAnimation on opacity { id: anim_info_text_show; from: 0; to: 1; duration: 1000; easing.type: Easing.Linear}
-            NumberAnimation on opacity { id: anim_info_text_hide; from: 1; to: 0; duration: 1000; easing.type: Easing.Linear}
+            NumberAnimation on opacity {
+                id: anim_info_text_show;
+                from: 0; to: 1;
+                duration: 1000;
+                easing.type: Easing.Linear
+            }
+            NumberAnimation on opacity {
+                id: anim_info_text_hide;
+                from: 1; to: 0;
+                duration: 1000;
+                easing.type: Easing.Linear
+            }
         }
     }
 
+
+    // ==== ОКНО ПРЕДМЕТА ====
+    // окно, которое показывается когда игрок находит предмет
     Rectangle{
         id: item_window
 
@@ -358,7 +390,7 @@ Rectangle {
         }
     }
 
-
+    /// ==== ГЛАВНОЕ МЕНЮ ====
     Rectangle {
         id: stories_view
 
@@ -375,10 +407,23 @@ Rectangle {
                               path_episode_id
 
         Image {
+            property string img_file_name: ""
+
             x:0
             y:0
+
             id: story_cover
+
+            source: server_name +
+                    path_separator +
+                    stories_view.path +
+                    path_separator +
+                    img_file_name;
         }
+
+        /// вставить текст!!!
+        /// НАЗВАНИЕ ЭПИЗОДА
+        /// описание эпизода
 
         Component {
             id: contactDelegate
@@ -386,21 +431,10 @@ Rectangle {
                 width: parent.width; height: 40
 
                 property string story_id: id
-
                 property string story_cover_id: cover
 
-//                Image {
-
-//                    x: 10
-//                    y: 10
-
-//                    height: parent.height - 10 * 2
-//                    width: parent.height - 10 * 2
-
-//                    source: cover
-//                }
-
-                Text { text: title
+                Text {
+                    text: title
                     color: "white"
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -411,39 +445,7 @@ Rectangle {
                     height: parent.height
 
                     onClicked: {
-//                        console.log(stories_view.mode);
-
-                        if(stories_view.mode === "stories")
-                        {
-                            stories_listview.currentIndex = index;
-
-                            stories_view.path_story_id = story_id;
-                            console.log("parent.story_cover_id " + parent.story_cover_id)
-                            story_cover.source = parent.story_cover_id;
-
-                            story_cover.width = stories_view.width;
-                            story_cover.height = stories_view.height;
-                        }
-                        else if(stories_view.mode === "episodes")
-                        {
-                            stories_listview.currentIndex = index;
-
-                            stories_view.path_episode_id = story_id;
-                            story_cover.source = server_name +
-                                    path_separator +
-                                    stories_view.path +
-                                    path_separator +
-                                    parent.story_cover_id;
-
-                            console.log(server_name +
-                                        path_separator +
-                                        stories_view.path +
-                                        path_separator +
-                                        parent.story_cover_id);
-
-                            story_cover.width = stories_view.width;
-                            story_cover.height = stories_view.height;
-                        }
+                        stories_listview.currentIndex = index;
                     }
                 }
             }
@@ -462,8 +464,22 @@ Rectangle {
             model: stories_model
             delegate: contactDelegate
             highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+            onCurrentIndexChanged: {
+
+                if(stories_view.mode === "stories")
+                    stories_view.path_story_id = currentItem.story_id;
+                else if(stories_view.mode === "episodes")
+                    stories_view.path_episode_id = currentItem.story_id;
+
+                story_cover.img_file_name = currentItem.story_cover_id;
+                story_cover.width = stories_view.width;
+                story_cover.height = stories_view.height;
+                console.log("stories cover "
+                            + story_cover.source)
+            }
         }
 
+        // кнопка PLAY!!!
         Rectangle {
             width: 180
             height: 80
@@ -486,15 +502,9 @@ Rectangle {
 
                 onClicked: {
                     if(stories_view.mode === "stories")
-                    {
-                        console.log("lol "  + stories_view.path);
                         container.getStoryManifest(stories_view.path)
-                    }
                     else if(stories_view.mode === "episodes")
-                    {
-                        console.log("lol "  + stories_view.path);
                         container.getEpisodeData(stories_view.path)
-                    }
                 }
             }
         }
