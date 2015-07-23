@@ -412,6 +412,9 @@ Rectangle {
             x:0
             y:0
 
+            width: parent.width - stories_listview.width
+            height: parent.height - play_button.height
+
             id: story_cover
 
             source: server_name +
@@ -419,19 +422,70 @@ Rectangle {
                     stories_view.path +
                     path_separator +
                     img_file_name;
-        }
 
-        /// вставить текст!!!
-        /// НАЗВАНИЕ ЭПИЗОДА
-        /// описание эпизода
+
+            /// вставить текст!!!
+            /// НАЗВАНИЕ ЭПИЗОДА
+            /// описание эпизода
+
+            // текст названия и описания
+            // находятся на изображении -
+            // потому что легче выставлять якоря
+
+            // НАЗВАНИЕ
+            Text {
+                id: text_title
+
+                width: parent.width
+
+                font.family: "Arial"
+                font.pixelSize: parent.height * 0.2
+
+                wrapMode: Text.WordWrap
+
+                color: "white"
+
+                anchors.bottom: text_description.top
+
+                text: ""
+            }
+
+            // ОПИСАНИЕ
+            Text {
+                id: text_description
+
+                width: parent.width
+                height: (font.pixelSize + 2) * 3
+
+                font.family: "Arial"
+                font.pixelSize: 12
+
+                wrapMode: Text.WordWrap
+
+                color: "white"
+
+                anchors.bottom: parent.bottom
+
+                text: ""
+            }
+        }
 
         Component {
             id: contactDelegate
-            Item {
+            Rectangle {
                 width: parent.width; height: 40
+
+                color: "transparent"
+                //                color: ListView.isCurrentItem ? "blue" : "green"
+                //                radius: 5
+                //                border.color: "white"
+                //                border.width: 3
 
                 property string story_id: id
                 property string story_cover_id: cover
+
+                property string story_title_text: title
+                property string story_description_text: description
 
                 Text {
                     text: title
@@ -464,23 +518,48 @@ Rectangle {
             model: stories_model
             delegate: contactDelegate
             highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+
             onCurrentIndexChanged: {
 
+                // устанавливаем путь к обложке (истории или эпизода)
                 if(stories_view.mode === "stories")
                     stories_view.path_story_id = currentItem.story_id;
                 else if(stories_view.mode === "episodes")
                     stories_view.path_episode_id = currentItem.story_id;
 
+                // имя файла обложки
+                // todo: неплохо бы было универсиализировать имя файла
+                //       обложки типа cover.jpg
                 story_cover.img_file_name = currentItem.story_cover_id;
-                story_cover.width = stories_view.width;
-                story_cover.height = stories_view.height;
+
+
+                // надо несколько урезать размер картинки,
+                // чтобы вписывалась в концепцию -
+                // справа - упирается в список
+                // снизу - в кнопку Play
+                story_cover.width =
+                        stories_view.width - stories_listview.width;
+
+                story_cover.height =
+                        stories_view.height - play_button.height;
+
                 console.log("stories cover "
                             + story_cover.source)
+
+
+                // выставляем текст названия и текст описания
+                text_title.text =
+                        currentItem.story_title_text;
+
+                text_description.text =
+                        currentItem.story_description_text;
             }
         }
 
         // кнопка PLAY!!!
         Rectangle {
+            id: play_button
+
             width: 180
             height: 80
 
