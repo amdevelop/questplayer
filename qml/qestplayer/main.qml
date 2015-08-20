@@ -406,6 +406,14 @@ Rectangle {
                               path_separator +
                               path_episode_id
 
+        function back() {
+            path_story_id = ""
+            path_episode_id = ""
+            story_cover.img_file_name = ""
+            stories_view.mode = "stories";
+            QuestJs.initStoriesMenu();
+        }
+
         Image {
             property string img_file_name: ""
 
@@ -581,9 +589,47 @@ Rectangle {
 
                 onClicked: {
                     if(stories_view.mode === "stories")
+                    {
+                        episodes_json = ""
                         container.getStoryManifest(stories_view.path)
+                    }
                     else if(stories_view.mode === "episodes")
                         container.getEpisodeData(stories_view.path)
+                }
+            }
+        }
+
+        Rectangle {
+            id: back_button
+
+            width: 80
+            height: 80
+
+            x: 0
+            y: parent.height - 80
+
+            visible: (stories_view.mode === "episodes")
+
+            color: "lightsteelblue";
+            radius: 5
+            Text {
+                text: "back"
+                color: "white"
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            MouseArea {
+                width: parent.width
+                height: parent.height
+
+                onClicked: {
+//                    if(stories_view.mode === "stories")
+//                        container.getStoryManifest(stories_view.path)
+                    if(stories_view.mode === "episodes")
+                    {
+                        stories_view.back()
+                    }
                 }
             }
         }

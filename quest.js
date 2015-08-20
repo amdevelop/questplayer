@@ -288,7 +288,13 @@ function initStoriesMenu()
     var i = 0;
     for(i = 0; i < stories.length; i++)
     {
-        stories_model.append(stories[i]);
+        if(stories[i].status)
+        {
+            if(stories[i].status === "published")
+                stories_model.append(stories[i]);
+        }
+        else
+            stories_model.append(stories[i]);
     }
 }
 
@@ -300,7 +306,13 @@ function initEpisodesMenu()
     var i = 0;
     for(i = 0; i < stories.length; i++)
     {
-        stories_model.append(stories[i]);
+        if(stories[i].status)
+        {
+            if(stories[i].status === "published")
+                stories_model.append(stories[i]);
+        }
+        else
+            stories_model.append(stories[i]);
     }
 }
 
