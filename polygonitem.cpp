@@ -11,14 +11,24 @@ PolygonItem::PolygonItem(QObject *parent) :
 bool PolygonItem::contains(qreal x, qreal y,
                            int w, int h)
 {
-    QPolygonF p;
+    bool is_contains = false;
 
-    foreach (QVariant point, m_polygon) {
-        p << QPointF(
-                point.toList()[0].toReal() * w,
-                point.toList()[1].toReal() * h);
+    foreach (QVariant var, m_polygon) {
+        QPolygonF p;
+
+        foreach (QVariant point, var.toList()) {
+            p << QPointF(
+                    point.toList()[0].toReal() * w,
+                    point.toList()[1].toReal() * h);
+        }
+
+        is_contains = p.containsPoint(QPointF(x, y), Qt::OddEvenFill);
+
+        if(is_contains)
+            break;
     }
 
-    return p.containsPoint(QPointF(x, y), Qt::OddEvenFill);
+
+    return is_contains;
 }
 

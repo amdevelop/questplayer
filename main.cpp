@@ -24,8 +24,12 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QVBoxLayout vbLayout(&conatiner);
 
     QDeclarativeView dv;
+
+    vbLayout.setMargin(0);
     vbLayout.addWidget(&dv);
     conatiner.resize(800, 600);
+    conatiner.show();
+
     dv.setResizeMode(QDeclarativeView::SizeRootObjectToView);
     dv.setSource(QUrl("qrc:/qml/qestplayer/main.qml"));
 
@@ -33,7 +37,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 //                               "quest_manifest.json",
 //                               dv.rootObject(),
 //                               QuestRemoteCreator::ModeOffline);
-    QuestRemoteCreator creator("http://matal.ru/quests",
+    QuestRemoteCreator creator("http://quest:8888/quests",
                                P_MANIFEST_MAIN,
                                dv.rootObject(),
                                QuestRemoteCreator::ModeOnline);

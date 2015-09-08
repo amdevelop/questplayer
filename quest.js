@@ -79,7 +79,11 @@ function initQuest()
 {
     quest_data = JSON.parse(container.quest_json);
 
-    episode_title.text = quest_data.episode.title;
+    if(quest_data.episode.title !== null)
+        episode_title.text = quest_data.episode.title;
+    else
+        episode_title.text = "Episode";
+
     episode_cover.source =
             quest_path + container.path_separator +
 //            quest_data.episode.id + "/" +
@@ -144,7 +148,10 @@ function nextAct()
         {
             info_view.visible = true;
             info_show_type = "act_begin";
-            info_text.text = current_act.title;
+            if(current_act.title !== null)
+                info_text.text = current_act.title;
+            else
+                info_text.text = "Act";
             anim_info_text_show.start();
             timer_animation_show.start();
         }
@@ -168,7 +175,10 @@ function nextScene()
 
         info_view.visible = true;
         info_show_type = "scene_begin";
-        info_text.text = current_scene.title;
+        if(current_scene.title !== null)
+            info_text.text = current_scene.title;
+        else
+            info_text.text = "Scene";
         anim_info_text_show.start();
         if(timer_animation_show.running !== true)
             timer_animation_show.start();
@@ -183,29 +193,73 @@ function drawScene()
 {
     item_model.clear();
 
-    background_image.source =
+    var base_path =
             quest_path + container.path_separator +
             current_act.id + container.path_separator +
-            current_scene.id + container.path_separator +
-            current_scene.background;
+            current_scene.id + container.path_separator;
+
+
+    if(current_scene.background !== "")
+        background_image.source =
+                base_path +
+                current_scene.background;
+
     background_image.width = container.width;
     background_image.height = container.height;
 
     var i;
+    var item_counter = 0;
     for(i = 0; i < current_scene.items.length; i++)
     {
-        item_model.append({ "item" : current_scene.items[i].title, "item_color": "white"});
+        var current_item = current_scene.items[i];
 
-        var polygon_item = Qt.createQmlObject(
-                    'import QuestItems 1.0; QuestPolygon {}',
-                         container,
-                     "quest_item" + scene_items.length.toString());
+        console.log("LOL!");
+        console.log(i);
 
-        polygon_item.polygon = current_scene.items[i].polygon;
+        var interior_item = Qt.createQmlObject(
+                    'import QtQuick 1.1; Image {}',
+                    container,
+                    "interior_item" + i.toString());
 
-        scene_items[scene_items.length] = polygon_item;
+        interior_item.source =
+                base_path +
+                current_item.id + container.path_separator +
+                current_item.image;
 
-        scene_item_map[polygon_item] = current_scene.items[i];
+        console.log(interior_item.source);
+
+        interior_item.x = current_item.scene_x * container.width;
+        interior_item.y = current_item.scene_y * container.height;
+
+        interior_item.width = current_item.scene_scale_x * container.width;
+        interior_item.height = current_item.scene_scale_y * container.height;
+
+        interior_item.visible = true;
+
+
+
+        if(current_item.type === "subject")
+        {
+            var item_title;
+            if(current_item.title === null)
+                item_title = "Item";
+
+            item_model.append({ "item" : item_title, "item_color": "white"});
+
+            //            var j;
+            //            for(j = 0; j < current_scene.items.length; j++)
+            //            {
+            var polygon_item = Qt.createQmlObject(
+                        'import QuestItems 1.0; QuestPolygon {}',
+                        container,
+                        "quest_item" + scene_items.length.toString());
+
+            polygon_item.polygon = current_item.polygons;
+
+            scene_items[scene_items.length] = polygon_item;
+            scene_item_map[polygon_item] = interior_item;
+            //            }
+        }
     }
 }
 
@@ -250,6 +304,9 @@ function checkScene()
 function showDetail(item_data, startX, startY)
 {
     console.log(startX, startY)
+
+    item_data.visible = false;
+
     item_window.x = startX - item_window.width / 2;
     item_window.y = startY - item_window.height / 2;
     item_window.scale = 0;
@@ -257,12 +314,14 @@ function showDetail(item_data, startX, startY)
     if(item_data.detail !== null &&
             item_data.detail !== "")
     {
-    item_image.source =
-            quest_path + container.path_separator +
-            current_act.id + container.path_separator +
-            current_scene.id + container.path_separator +
-            item_data.id + container.path_separator +
-            item_data.detail;
+    item_image.source = item_data.source;
+    item_window.opacity = 0.3;
+//            quest_path + container.path_separator +
+//            current_act.id + container.path_separator +
+//            current_scene.id + container.path_separator +
+//            item_data.id + container.path_separator +
+//            item_data.detail;
+
     item_image.visible = true;
     }
     else
