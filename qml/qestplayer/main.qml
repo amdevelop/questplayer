@@ -315,23 +315,25 @@ Rectangle {
     Rectangle{
         id: item_window
 
-        radius: 10
+//        radius: 10
 
-        color: "black"
+        color: "transparent"
 
-        border.color: "white"
-        border.width: 5
+//        border.color: "white"
+//        border.width: 5
 
-        width: 150
-        height: 150
+//        width: item_image.width
+//        height: item_image.height
 
         smooth: true
 
         visible: false
 
+        property real koef: 0.0
+
         Image {
-            width: parent.width - parent.border.width * 2
-            height: parent.height - parent.border.height * 2
+            width: parent.width
+            height: parent.height
 
             id: item_image
             source: ""
@@ -375,19 +377,42 @@ Rectangle {
             PropertyChanges {
                 target: item_window
 
-                x: container.width / 2 - item_window.width / 2
-                y: container.height / 2 - item_window.height / 2
+                x: container.width / 2 - item_image.width / 2
+                y: container.height / 2 - item_image.height / 2
 
-                rotation: 5 * 360
+                width: container.width * 0.2
+                height: width * koef
 
-                scale: 1
+    //            rotation: 5 * 360
+    //          scale: 1
             }
         }
 
         transitions: Transition {
             from: ""; to: "show_in_center";
-            NumberAnimation { properties: "x,y,rotation,scale"; duration: 200; easing.type: Easing.Linear }
+            NumberAnimation { properties: "x,y,width,height"; duration: 300; easing.type: Easing.OutBack  }
         }
+
+
+//        states: State {
+//            name: "show_in_center"
+//            when: item_window.visible == true
+//            PropertyChanges {
+//                target: item_window
+
+//                x: container.width / 2 - item_window.width / 2
+//                y: container.height / 2 - item_window.height / 2
+
+//                rotation: 5 * 360
+
+//                scale: 1
+//            }
+//        }
+
+//        transitions: Transition {
+//            from: ""; to: "show_in_center";
+//            NumberAnimation { properties: "x,y,rotation,scale"; duration: 200; easing.type: Easing.Linear }
+//        }
     }
 
     /// ==== ГЛАВНОЕ МЕНЮ ====

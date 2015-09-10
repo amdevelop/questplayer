@@ -31,8 +31,7 @@ qtcAddDeployment()
 OTHER_FILES += \
     quest.js \
     quest.json \
-    quest1.json \
-    ItemImage.qml
+    quest1.json
 
 RESOURCES += \
     quest.qrc

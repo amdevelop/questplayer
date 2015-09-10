@@ -3,5 +3,6 @@
         <file>quest.js</file>
         <file>qml/qestplayer/main.qml</file>
         <file>qml/qestplayer/MenuButton.qml</file>
+        <file>qml/qestplayer/ItemImage.qml</file>
     </qresource>
 </RCC>

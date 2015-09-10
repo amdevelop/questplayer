@@ -216,7 +216,15 @@ function drawScene()
         console.log("LOL!");
         console.log(i);
 
-        var interior_item = Qt.createQmlObject(
+        var interior_item = null;
+//        var interior_fake_item = null;
+//        var component = Qt.createComponent("qrc:/qml/qestplayer/ItemImage.qml");
+//                 if (component.status === Component.Ready) {
+////                     interior_item = component.createObject(container);
+//                     interior_fake_item = component.createObject(container);
+//                 }
+
+        interior_item = Qt.createQmlObject(
                     'import QtQuick 1.1; Image {}',
                     container,
                     "interior_item" + i.toString());
@@ -226,7 +234,7 @@ function drawScene()
                 current_item.id + container.path_separator +
                 current_item.image;
 
-        console.log(interior_item.source);
+//        console.log(interior_item.source);
 
         interior_item.x = current_item.scene_x * container.width;
         interior_item.y = current_item.scene_y * container.height;
@@ -235,8 +243,6 @@ function drawScene()
         interior_item.height = current_item.scene_scale_y * container.height;
 
         interior_item.visible = true;
-
-
 
         if(current_item.type === "subject")
         {
@@ -263,6 +269,11 @@ function drawScene()
     }
 }
 
+function initalizeInterior(interior_item, current_item)
+{
+
+}
+
 function checkCollisions(mouseX, mouseY)
 {
     var i;
@@ -274,10 +285,16 @@ function checkCollisions(mouseX, mouseY)
             {
                 var tmp_item = scene_item_map[scene_items[i]];
 
+                console.log("found");
                 if(tmp_item)
-                        showDetail(tmp_item,
-                                   mouseX,
-                                   mouseY);
+                {
+//                    tmp_item.found = true;
+                    console.log("found");
+
+                                            showDetail(tmp_item,
+                                                       mouseX,
+                                                       mouseY);
+                }
 
                 scene_items[i].found = true;
 
@@ -307,33 +324,18 @@ function showDetail(item_data, startX, startY)
 
     item_data.visible = false;
 
-    item_window.x = startX - item_window.width / 2;
-    item_window.y = startY - item_window.height / 2;
-    item_window.scale = 0;
-
-    if(item_data.detail !== null &&
-            item_data.detail !== "")
-    {
     item_image.source = item_data.source;
-    item_window.opacity = 0.3;
-//            quest_path + container.path_separator +
-//            current_act.id + container.path_separator +
-//            current_scene.id + container.path_separator +
-//            item_data.id + container.path_separator +
-//            item_data.detail;
+
+    item_window.width = item_data.width;
+    item_window.height = item_data.height;
+    item_window.x = item_data.x;
+    item_window.y = item_data.y;
+    item_window.z = 10000;
+
+    item_window.koef = item_data.width / item_data.height;
 
     item_image.visible = true;
-    }
-    else
-    {
-        item_text.text = item_data.title;
-        item_text.visible = true;
-    }
-
-
     item_window.visible = true;
-
-//    number_anim.start();
 }
 
 
