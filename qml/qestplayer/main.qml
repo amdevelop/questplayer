@@ -33,12 +33,14 @@ Rectangle {
                 path_separator +
                 stories_view.path;
 
-        QuestJs.initQuest();
+        QuestJs.initQuest(stories_view.path_episode_id);
 
         stories_view.visible = false;
 
-        quest_menu.visible = true;
-        anim.start();
+//        quest_menu.visible = true;
+//        anim.start();
+
+        QuestJs.startQuest();
     }
 
     onEpisodes_jsonChanged: {
@@ -97,15 +99,34 @@ Rectangle {
         id: quest_menu
 
         // потому что находится и выпадает сверху
-        y: -height
+        //        y: -height
 
         width: container.width
         height: container.height
 
         // opacity: 0.9
-        color: "#ccc"
+        color: "transparent"
 
         visible: false
+
+        z: 505
+
+        Rectangle {
+            id: pause_rectangle
+            width: quest_menu.width
+            height: quest_menu.height
+
+            color: "black"
+
+            opacity: 0
+
+            MouseArea {
+                width: parent.width
+                height: parent.height
+
+                onClicked: {}
+            }
+        }
 
         Image {
             id: episode_cover
@@ -126,14 +147,17 @@ Rectangle {
         }
 
         // анимация падения
-        NumberAnimation on y {
+        NumberAnimation {
+            target: pause_rectangle;
+            property: "opacity"
             id: anim;
-            from: -height;
-            to: 0;
+            from: 0;
+            to: 0.5;
             duration: 450;
             // собственно характер выпадания определяется
             // этой курвой
-            easing.type: Easing.OutBounce}
+            easing.type: Easing.OutExpo
+        }
 
         // кнопки упарвлеения меню
         // должно быть три:
@@ -184,8 +208,11 @@ Rectangle {
 
                     onClicked:
                     {
-                        QuestJs.startQuest();
+                        QuestJs.clearGame();
+                        stories_view.visible = true;
                         quest_menu.visible = false;
+
+                        quest_json = "";
                     }
                     onEntered: parent.border.color = "green"
                     onExited: parent.border.color = "blue"
@@ -193,9 +220,11 @@ Rectangle {
             }
 
             MenuButton {
-                id: exit_button
+                id: next_button
 
-                button_text: qsTr("Exit")
+                button_text: qsTr("Next")
+
+                visible: false
 
                 MouseArea {
                     width: parent.width
@@ -203,7 +232,7 @@ Rectangle {
 
                     hoverEnabled: true
 
-                    onClicked: Qt.quit();
+                    onClicked: {QuestJs.nextQuest();}
                     onEntered: parent.border.color = "green"
                     onExited: parent.border.color = "blue"
 
@@ -220,6 +249,7 @@ Rectangle {
         id: item_menu
 
         x: -width
+        z: 504
 
         width: 100
         height: container.height
@@ -274,9 +304,58 @@ Rectangle {
         width: parent.width
         height: parent.height
 
-        color: "black"
+        color: "transparent"
 
         visible: false
+
+        z: 502
+
+        Rectangle {
+            width: parent.width
+            height: parent.height
+
+            color: "black"
+            opacity: 0.7
+
+            MouseArea {
+                width: parent.width
+                height: parent.height
+
+                onClicked: {}
+            }
+        }
+
+
+        Rectangle {
+            id: skip_button
+
+            width: 80
+            height: 80
+
+            x: parent.width - 80
+            y: 0
+
+//            visible: (stories_view.mode === "episodes")
+
+            color: "lightsteelblue";
+            radius: 5
+            Text {
+                text: "skip"
+                color: "white"
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            MouseArea {
+                width: parent.width
+                height: parent.height
+
+                onClicked: {
+                    QuestJs.skip();
+                }
+            }
+        }
+
 
         Timer {
             id: timer_animation_show
@@ -315,21 +394,14 @@ Rectangle {
     Rectangle{
         id: item_window
 
-//        radius: 10
-
         color: "transparent"
-
-//        border.color: "white"
-//        border.width: 5
-
-//        width: item_image.width
-//        height: item_image.height
-
         smooth: true
 
         visible: false
 
         property real koef: 0.0
+
+        z: 503
 
         Image {
             width: parent.width
@@ -337,6 +409,8 @@ Rectangle {
 
             id: item_image
             source: ""
+
+            smooth: true
         }
 
         Text {
@@ -382,37 +456,13 @@ Rectangle {
 
                 width: container.width * 0.2
                 height: width * koef
-
-    //            rotation: 5 * 360
-    //          scale: 1
             }
         }
 
         transitions: Transition {
             from: ""; to: "show_in_center";
-            NumberAnimation { properties: "x,y,width,height"; duration: 300; easing.type: Easing.OutBack  }
+            NumberAnimation { properties: "x,y,width,height"; duration: 300; easing.type: Easing.InOutBack  }
         }
-
-
-//        states: State {
-//            name: "show_in_center"
-//            when: item_window.visible == true
-//            PropertyChanges {
-//                target: item_window
-
-//                x: container.width / 2 - item_window.width / 2
-//                y: container.height / 2 - item_window.height / 2
-
-//                rotation: 5 * 360
-
-//                scale: 1
-//            }
-//        }
-
-//        transitions: Transition {
-//            from: ""; to: "show_in_center";
-//            NumberAnimation { properties: "x,y,rotation,scale"; duration: 200; easing.type: Easing.Linear }
-//        }
     }
 
     /// ==== ГЛАВНОЕ МЕНЮ ====
@@ -424,6 +474,7 @@ Rectangle {
         width: parent.width
         height: parent.height
 
+        z: 504
         property string mode: "stories"
         property string path_story_id: ""
         property string path_episode_id: ""
@@ -474,6 +525,8 @@ Rectangle {
                 font.family: "Arial"
                 font.pixelSize: parent.height * 0.2
 
+                style: Text.Raised; styleColor: "#ccc"
+
                 wrapMode: Text.WordWrap
 
                 color: "white"
@@ -492,6 +545,8 @@ Rectangle {
 
                 font.family: "Arial"
                 font.pixelSize: 12
+
+                style: Text.Raised; styleColor: "#ccc"
 
                 wrapMode: Text.WordWrap
 
@@ -619,7 +674,9 @@ Rectangle {
                         container.getStoryManifest(stories_view.path)
                     }
                     else if(stories_view.mode === "episodes")
-                        container.getEpisodeData(stories_view.path)
+                    {
+                        QuestJs.getQuest();
+                    }
                 }
             }
         }

@@ -62,6 +62,10 @@ var quest_data;
 //        "cover" : "detective.jpg",
 //        "title" : "Episode 1" } };
 
+// constants
+var subject_z = 100
+var interior_z = 200
+
 //var quest_path = "file:quest";
 var quest_path =  ""; // "http://quest:8888/quests/";
 
@@ -72,11 +76,18 @@ var act_scene_counter = 0;
 
 var scene_items = [];
 var scene_item_map = {};
+var scene_interior_list = [];
 
 var info_show_type = "";
 
-function initQuest()
+var all_episode_count = -1;
+var current_episode_count = -1;
+
+function initQuest(current_number)
 {
+    current_episode_count = current_number;
+    console.log("current_episode_count ", current_episode_count);
+
     quest_data = JSON.parse(container.quest_json);
 
     if(quest_data.episode.title !== null)
@@ -95,23 +106,52 @@ function startQuest() {
         nextAct();
 }
 
-function gameOver()
+function clearScene()
+{
+    var i;
+    for(i = 0; i < scene_items.length; i++)
+        scene_items[i].destroy();
+
+    for(i = 0; i < scene_interior_list.length; i++)
+        scene_interior_list[i].destroy();
+
+    scene_items = [];
+    scene_item_map = {};
+    scene_interior_list = [];
+}
+
+function clearGame()
 {
     current_act = null;
     current_scene = null;
     act_counter = 0;
     act_scene_counter = 0;
 
-    scene_items = [];
-    scene_item_map = {};
+    clearScene();
 
     info_show_type = "";
+}
+
+function gameOver()
+{
+    clearGame();
 
     episode_title.text = "Game over!";
 
     quest_menu.visible = true;
     anim.start();
+
+    var tmp_episode = parseInt(current_episode_count, 10);
+    console.log("compare ", (tmp_episode + 1), all_episode_count)
+
+    next_button.visible = false;
+
+//    if((1 + tmp_episode) > all_episode_count)
+//        next_button.visible = false;
+//    else
+//        next_button.visible = true;
 }
+
 
 function infoShown()
 {
@@ -131,10 +171,46 @@ function infoShown()
     }
     else if(info_show_type === "scene_end")
     {
-        drawScene();
+//        drawScene();
         info_view.visible = false;
         timer_animation_show.stop();
     }
+}
+
+function skip()
+{
+    if(info_show_type === "act_begin")
+     {
+         info_show_type = "act_end";
+         timer_animation_show.stop();
+         anim_info_text_show.stop();
+
+         info_text.opacity = 1.0;
+         timer_animation_show.start();
+     }
+     else if(info_show_type === "act_end")
+     {
+        info_show_type = "act_end";
+        timer_animation_show.stop();
+        anim_info_text_hide.stop();
+
+        info_text.opacity = 1.0;
+        timer_animation_show.start();
+     }
+     else if(info_show_type === "scene_begin")
+     {
+        info_show_type = "scene_end";
+        anim_info_text_show.stop();
+        info_text.opacity = 1.0;
+     }
+     else if(info_show_type === "scene_end")
+     {
+        info_show_type = "scene_end";
+        anim_info_text_hide.stop();
+        info_text.opacity = 1.0;
+     }
+
+    infoShown();
 }
 
 function nextAct()
@@ -142,6 +218,16 @@ function nextAct()
     if(act_counter + 1 <= quest_data.episode.acts.length)
     {
         current_act = quest_data.episode.acts[act_counter];
+
+        if(act_scene_counter + 1 <= current_act.scenes.length)
+        {
+            clearScene();
+
+            current_scene = current_act.scenes[act_scene_counter];
+
+            drawScene();
+//            act_scene_counter++;
+        }
 
         if(current_act.title !== "" ||
            current_act.title !== null)
@@ -168,10 +254,8 @@ function nextScene()
 {
     if(act_scene_counter + 1 <= current_act.scenes.length)
     {
-        scene_items = [];
-        scene_item_map = {};
-
-        current_scene = current_act.scenes[act_scene_counter];
+//        clearScene();
+//        current_scene = current_act.scenes[act_scene_counter];
 
         info_view.visible = true;
         info_show_type = "scene_begin";
@@ -217,13 +301,6 @@ function drawScene()
         console.log(i);
 
         var interior_item = null;
-//        var interior_fake_item = null;
-//        var component = Qt.createComponent("qrc:/qml/qestplayer/ItemImage.qml");
-//                 if (component.status === Component.Ready) {
-////                     interior_item = component.createObject(container);
-//                     interior_fake_item = component.createObject(container);
-//                 }
-
         interior_item = Qt.createQmlObject(
                     'import QtQuick 1.1; Image {}',
                     container,
@@ -233,8 +310,6 @@ function drawScene()
                 base_path +
                 current_item.id + container.path_separator +
                 current_item.image;
-
-//        console.log(interior_item.source);
 
         interior_item.x = current_item.scene_x * container.width;
         interior_item.y = current_item.scene_y * container.height;
@@ -252,9 +327,6 @@ function drawScene()
 
             item_model.append({ "item" : item_title, "item_color": "white"});
 
-            //            var j;
-            //            for(j = 0; j < current_scene.items.length; j++)
-            //            {
             var polygon_item = Qt.createQmlObject(
                         'import QuestItems 1.0; QuestPolygon {}',
                         container,
@@ -264,8 +336,13 @@ function drawScene()
 
             scene_items[scene_items.length] = polygon_item;
             scene_item_map[polygon_item] = interior_item;
-            //            }
+
+            interior_item.z = subject_z++;
         }
+        else
+            interior_item.z = interior_z++;
+
+        scene_interior_list[scene_interior_list.length] = interior_item;
     }
 }
 
@@ -277,13 +354,15 @@ function initalizeInterior(interior_item, current_item)
 function checkCollisions(mouseX, mouseY)
 {
     var i;
+    var tmp_item = null;
+
     for(i = 0; i < scene_items.length; i++)
     {
         if(!scene_items[i].found)
             if(scene_items[i].contains(mouseX, mouseY,
                                        container.width, container.height))
             {
-                var tmp_item = scene_item_map[scene_items[i]];
+                tmp_item = scene_item_map[scene_items[i]];
 
                 console.log("found");
                 if(tmp_item)
@@ -296,10 +375,16 @@ function checkCollisions(mouseX, mouseY)
                                                        mouseY);
                 }
 
+
                 scene_items[i].found = true;
+
 
                 item_model.get(i).item_color = "darkgray";
             }
+
+        if(tmp_item !== null)
+            if(scene_item_map[scene_items[i]] === tmp_item)
+                scene_items[i].found = true;
     }
 }
 
@@ -365,6 +450,11 @@ function initEpisodesMenu()
 
     var stories = JSON.parse(container.episodes_json);
     var i = 0;
+
+    all_episode_count = stories.length;
+
+    console.log("all_episode_count ", all_episode_count);
+
     for(i = 0; i < stories.length; i++)
     {
         if(stories[i].status)
@@ -377,8 +467,22 @@ function initEpisodesMenu()
     }
 }
 
+function getQuest()
+{
+    container.getEpisodeData(stories_view.path)
+}
+
+function nextQuest()
+{
+    var tmp_number = parseInt(current_episode_count, 10);
+    if((tmp_number + 1) <= all_episode_count)
+   {
+        stories_view.path_episode_id = (tmp_number + 1).toString();
+        getQuest();
+   }
+}
+
 function activateItem(index)
 {
-
 }
 

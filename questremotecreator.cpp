@@ -99,7 +99,6 @@ void QuestRemoteCreator::getManifest(QString request)
     }
 }
 
-
 void QuestRemoteCreator::slotFinished(QNetworkReply* reply)
 {
     m_declarative_root_object->setProperty(m_current_property.toLatin1(),
