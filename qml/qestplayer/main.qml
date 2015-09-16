@@ -37,8 +37,8 @@ Rectangle {
 
         stories_view.visible = false;
 
-//        quest_menu.visible = true;
-//        anim.start();
+        //        quest_menu.visible = true;
+        //        anim.start();
 
         QuestJs.startQuest();
     }
@@ -76,6 +76,7 @@ Rectangle {
         }
     }
 
+    // QUEST ITEMS !!!
     Image {
         id: background_image
         smooth: true
@@ -91,6 +92,180 @@ Rectangle {
             QuestJs.checkCollisions(mouseX, mouseY);
         }
     }
+
+    Rectangle {
+        id: pause_button
+
+        width: height
+        height: play_button.height * 0.7
+
+        x: parent.width - width
+        y: 0
+
+        z: 300
+
+        color: "transparent";
+
+        Image {
+            id: pause_button_image
+
+            source: ":/img/back_for_button_2.PNG"
+
+            width: parent.width
+            height: parent.height
+        }
+
+        Image {
+            id: pause_button_icon
+            source: ":/img/button_pause_off.PNG"
+
+            width: parent.width * 0.55
+            height: width
+
+            x: pause_button_image.width * 0.22
+            y: pause_button_image.height * 0.205
+        }
+
+        NumberAnimation{
+            id: pause_show_anim
+            target: pause_button
+            property: "x"
+            duration: 100;
+            easing.type: Easing.InOutQuad;
+
+            from: container.width
+            to: container.width - pause_button.width
+        }
+
+        NumberAnimation {
+            id: pause_hide_anim
+            target: pause_button
+            property: "x"
+            duration: 100;
+            easing.type: Easing.InOutQuad;
+
+            from: container.width - pause_button.width
+            to: container.width
+        }
+
+        //        Component.onCompleted: {
+        //            visible = false;
+        //            pause_hide_anim.start();
+        //            visible = true;
+        //        }
+
+        MouseArea {
+            width: parent.width
+            height: parent.height
+
+            onClicked: {
+                if(quest_menu.visible)
+                    quest_menu.visible = false;
+                else
+                {
+                    item_menu.visible = false;
+
+                    quest_menu.visible = true;
+                    anim.start();
+                    pause_hide_anim.start();
+                    item_menu_hide_anim.start();
+                }
+                pause_button_icon.source = ":/img/button_pause_off.PNG";
+            }
+
+            onPressed: {
+                pause_button_icon.source = ":/img/button_pause_on.PNG";
+            }
+        }
+    }
+
+
+
+    Rectangle {
+        id: item_menu_button
+
+        width: height
+        height: play_button.height * 0.7
+
+        x: 0 // parent.width - width
+        y: 0
+        z: 301
+
+        color: "transparent";
+        rotation: 180
+
+        Image {
+            id: item_menu_button_image
+
+            source: ":/img/back_for_button_2.PNG"
+
+            width: parent.width
+            height: parent.height
+        }
+
+        Image {
+            id: item_menu_button_icon
+            source: ":/img/start_off.PNG"
+
+            width: parent.width * 0.55
+            height: width
+
+            x: item_menu_button_image.width * 0.22
+            y: item_menu_button_image.height * 0.205
+        }
+
+        NumberAnimation{
+            id: item_menu_show_anim
+            target: item_menu_button
+            property: "x"
+            duration: 100;
+            easing.type: Easing.InOutQuad;
+
+            from: -item_menu_button.width
+            to: 0
+        }
+
+        NumberAnimation {
+            id: item_menu_hide_anim
+            target: item_menu_button
+            property: "x"
+            duration: 100;
+            easing.type: Easing.InOutQuad;
+
+            from: 0
+            to: -item_menu_button.width
+        }
+
+        MouseArea {
+            width: parent.width
+            height: parent.height
+
+            onClicked: {
+                if(item_menu.visible)
+                    item_menu.visible = false;
+                else
+                {
+                    if(!quest_menu.visible)
+                    {
+                        item_menu.visible = true;
+                        anim_item_menu.start();
+                        item_menu_hide_anim.start();
+                    }
+
+                    item_menu_button_icon.source = ":/img/start_off.PNG";
+                }
+
+            }
+
+            onPressed: {
+                item_menu_button_icon.source = ":/img/start_off.PNG";
+            }
+        }
+    }
+
+
+
+
 
     // ==== МЕНЮ ПАУЗЫ ====
     // прямоугольник главного меню квеста (который выпадает при Esc)
@@ -129,11 +304,120 @@ Rectangle {
         }
 
         Image {
-            id: episode_cover
-            width: quest_menu.width
+            id: pause_back_img
+            width: parent.width * 0.33
             height: quest_menu.height
 
-            source: ""
+            x: parent.width * 0.33
+
+            source: ":/img/pause_back.png"
+
+
+
+
+            Column {
+
+                spacing: 5
+
+                width: parent.width
+
+                y:  parent.height * 0.3 +
+                    (parent.height * 2 * 0.3 - height) / 2
+
+
+                MenuButton {
+                    id: start_button
+
+                    button_text: qsTr("Start")
+
+                    width: parent.width * 0.7
+                    height: stories_listview.height / 6
+
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    MouseArea {
+                        width: parent.width
+                        height: parent.height
+
+                        onClicked:
+                        {
+                            QuestJs.startQuest();
+                            quest_menu.visible = false;
+                            pause_show_anim.start();
+                            item_menu_show_anim.start();
+
+                            //                            this/
+                            this.button_image.source = ":/img/button_off.PNG"
+                        }
+
+                        onPressed: {
+                            //                            button_image.source = ":/img/button_on.PNG"
+                        }
+                    }
+                }
+
+                MenuButton {
+                    id: main_menu_button
+
+                    button_text: qsTr("Main menu")
+
+                    width: parent.width * 0.7
+                    height: stories_listview.height / 6
+
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    MouseArea {
+                        width: parent.width
+                        height: parent.height
+
+                        //                        hoverEnabled: true
+
+                        onClicked:
+                        {
+                            QuestJs.clearGame();
+                            stories_view.visible = true;
+                            quest_menu.visible = false;
+
+                            quest_json = "";
+
+                            pause_show_anim.start();
+                            item_menu_show_anim.start();
+
+                            //                            button_image.source = ":/img/button_off.PNG"
+
+                        }
+
+                        onPressed: {
+                            //                            button_image.source = ":/img/button_on.PNG"
+                        }
+                    }
+                }
+
+                MenuButton {
+                    id: next_button
+
+                    button_text: qsTr("Next")
+
+                    visible: false
+
+                    MouseArea {
+                        width: parent.width
+                        height: parent.height
+
+                        hoverEnabled: true
+
+                        onClicked: {QuestJs.nextQuest();}
+                        onEntered: parent.border.color = "green"
+                        onExited: parent.border.color = "blue"
+
+                    }
+                }
+            }
+
+
+
+
+
         }
 
         Text{
@@ -144,6 +428,8 @@ Rectangle {
 
             y: (container.height * (1/3)) / 2
             x: container.width / 2 - width / 2
+
+            style: Text.Raised; styleColor: "#AAAAAA"
         }
 
         // анимация падения
@@ -157,87 +443,6 @@ Rectangle {
             // собственно характер выпадания определяется
             // этой курвой
             easing.type: Easing.OutExpo
-        }
-
-        // кнопки упарвлеения меню
-        // должно быть три:
-        // Resume
-        // Main menu
-        // Exit
-
-        Column {
-
-            spacing: 10
-
-            y:  parent.height * 0.3 +
-                (parent.height * 2 * 0.3 - height) / 2
-
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            MenuButton {
-                id: start_button
-
-                button_text: qsTr("Start")
-
-                MouseArea {
-                    width: parent.width
-                    height: parent.height
-
-                    hoverEnabled: true
-
-                    onClicked:
-                    {
-                        QuestJs.startQuest();
-                        quest_menu.visible = false;
-                    }
-                    onEntered: parent.border.color = "green"
-                    onExited: parent.border.color = "blue"
-                }
-            }
-
-            MenuButton {
-                id: main_menu_button
-
-                button_text: qsTr("Main menu")
-
-                MouseArea {
-                    width: parent.width
-                    height: parent.height
-
-                    hoverEnabled: true
-
-                    onClicked:
-                    {
-                        QuestJs.clearGame();
-                        stories_view.visible = true;
-                        quest_menu.visible = false;
-
-                        quest_json = "";
-                    }
-                    onEntered: parent.border.color = "green"
-                    onExited: parent.border.color = "blue"
-                }
-            }
-
-            MenuButton {
-                id: next_button
-
-                button_text: qsTr("Next")
-
-                visible: false
-
-                MouseArea {
-                    width: parent.width
-                    height: parent.height
-
-                    hoverEnabled: true
-
-                    onClicked: {QuestJs.nextQuest();}
-                    onEntered: parent.border.color = "green"
-                    onExited: parent.border.color = "blue"
-
-                }
-            }
         }
     }
 
@@ -258,6 +463,8 @@ Rectangle {
         color: "#ccc"
 
         visible: false
+
+        anchors.left: container.left
 
         NumberAnimation on x { id: anim_item_menu; from: -width; to: 0; duration: 200; easing.type: Easing.OutQuint}
 
@@ -292,6 +499,17 @@ Rectangle {
             delegate: item_delegate
 
             model: item_model
+        }
+
+        MouseArea
+        {
+            width: parent.width
+            height: parent.height
+
+            onClicked: {
+                item_menu.visible = false;
+                item_menu_show_anim.start();
+            }
         }
     }
 
@@ -329,21 +547,38 @@ Rectangle {
         Rectangle {
             id: skip_button
 
-            width: 80
-            height: 80
+            width: height
+            height: play_button.height * 0.7
 
-            x: parent.width - 80
+            x: parent.width - width
             y: 0
 
-//            visible: (stories_view.mode === "episodes")
 
-            color: "lightsteelblue";
-            radius: 5
-            Text {
-                text: "skip"
-                color: "white"
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
+            color: "transparent";
+            //            Text {
+            //                text: "skip"
+            //                color: "white"
+            //                anchors.verticalCenter: parent.verticalCenter
+            //                anchors.horizontalCenter: parent.horizontalCenter
+            //            }
+
+            Image {
+                id: skip_button_image
+                source: ":/img/back_for_button_2.PNG"
+
+                width: parent.width
+                height: parent.height
+            }
+
+            Image {
+                id: skip_button_arrow
+                source: ":/img/start_off.PNG"
+
+                width: parent.width * 0.55
+                height: width
+
+                x: skip_button_image.width * 0.22
+                y: skip_button_image.height * 0.205
             }
 
             MouseArea {
@@ -352,6 +587,11 @@ Rectangle {
 
                 onClicked: {
                     QuestJs.skip();
+                    skip_button_arrow.source = ":/img/start_off.PNG";
+                }
+
+                onPressed: {
+                    skip_button_arrow.source = ":/img/start_on.PNG";
                 }
             }
         }
@@ -372,6 +612,8 @@ Rectangle {
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
+
+            style: Text.Raised; styleColor: "#AAAAAA"
 
             NumberAnimation on opacity {
                 id: anim_info_text_show;
@@ -496,10 +738,12 @@ Rectangle {
             x:0
             y:0
 
-            width: parent.width - stories_listview.width
-            height: parent.height - play_button.height
+            //            width: parent.width // - stories_listview.width
+            //            height: 100 // parent.height  // - play_button.height
 
             id: story_cover
+
+            //            visible: false
 
             source: server_name +
                     path_separator +
@@ -525,7 +769,7 @@ Rectangle {
                 font.family: "Arial"
                 font.pixelSize: parent.height * 0.2
 
-                style: Text.Raised; styleColor: "#ccc"
+                style: Text.Raised; styleColor: "#AAAAAA"
 
                 wrapMode: Text.WordWrap
 
@@ -546,8 +790,7 @@ Rectangle {
                 font.family: "Arial"
                 font.pixelSize: 12
 
-                style: Text.Raised; styleColor: "#ccc"
-
+                style: Text.Raised; styleColor: "#AAAAAA"
                 wrapMode: Text.WordWrap
 
                 color: "white"
@@ -558,10 +801,41 @@ Rectangle {
             }
         }
 
+        Image {
+
+            // НИЖНЯЯ КАРТИНКА В МЕНЮ
+            id: menu_bottom_img
+            source: ":/img/menu_bottom.png"
+
+
+            // сначала узнаем ее ЧИСТЫЙ размер -
+            // вся высота минус высота cover
+            property int real_height: parent.height - story_cover.height
+            // а это коэффициент, определяющий
+            // на сколько выступают прозрачные куски
+            property real koef: 0.33
+            width: story_cover.width
+            height: real_height + real_height * koef
+            y: story_cover.height - real_height * koef
+        }
+
         Component {
             id: contactDelegate
             Rectangle {
-                width: parent.width; height: 40
+                width: stories_listview.width
+                height: stories_listview.height / 6
+
+                Image {
+                    id: delegate_image
+                    source: (stories_listview.currentIndex != index)?":/img/button_off.PNG":":/img/button_on.PNG"
+
+                    width: parent.width * 0.85
+                    height: parent.height
+
+                    anchors.right: parent.right
+                    anchors.rightMargin: 3 // (parent.width - parent.width) / 2
+                }
+
 
                 color: "transparent"
                 //                color: ListView.isCurrentItem ? "blue" : "green"
@@ -578,8 +852,8 @@ Rectangle {
                 Text {
                     text: title
                     color: "white"
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: delegate_image.verticalCenter
+                    anchors.horizontalCenter: delegate_image.horizontalCenter
                 }
 
                 MouseArea {
@@ -593,6 +867,9 @@ Rectangle {
             }
         }
 
+
+
+
         ListModel {
             id: stories_model
         }
@@ -600,12 +877,13 @@ Rectangle {
         ListView {
             id: stories_listview
 
-            width: 180
-            height: parent.height
+            width: parent.width * (1 - 0.68)
+            height: parent.height - play_button.height
             anchors.right: parent.right
             model: stories_model
             delegate: contactDelegate
-            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+            //            highlight: Rectangle { color: "lightsteelblue"; }//radius: 5 }
+            //            spacing: 0
 
             onCurrentIndexChanged: {
 
@@ -629,7 +907,8 @@ Rectangle {
                         stories_view.width - stories_listview.width;
 
                 story_cover.height =
-                        stories_view.height - play_button.height;
+                        //stories_view.height - play_button.height;
+                        parent.height * 0.8
 
                 console.log("stories cover "
                             + story_cover.source)
@@ -642,20 +921,34 @@ Rectangle {
                 text_description.text =
                         currentItem.story_description_text;
             }
+
+            Image {
+                id: menu_back
+                source: ":/img/menu_back.png"
+
+                width: stories_listview.width
+                height: container.height
+
+                anchors.right: parent.right
+
+                z: -10000
+            }
         }
+
+
 
         // кнопка PLAY!!!
         Rectangle {
             id: play_button
 
-            width: 180
-            height: 80
+            width: stories_listview.width * 0.85
+            height: width * 0.67
 
-            x: parent.width - 180
-            y: parent.height - 80
+            x: parent.width - width
+            y: parent.height - height
 
-            color: "lightsteelblue";
-            radius: 5
+            color: "transparent";
+            //            radius: 5
             Text {
                 text: "Play!"
                 color: "white"
@@ -663,19 +956,44 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
-            MouseArea {
-                width: parent.width
-                height: parent.height
+            Image {
+                id: play_button_image
+                source: ":/img/back_for_button_start.PNG"
 
-                onClicked: {
-                    if(stories_view.mode === "stories")
-                    {
-                        episodes_json = ""
-                        container.getStoryManifest(stories_view.path)
-                    }
-                    else if(stories_view.mode === "episodes")
-                    {
-                        QuestJs.getQuest();
+                width: parent.width
+                height: parent.width * 0.67 // dirty hack...
+
+                Image {
+                    id: play_button_arrow
+                    source: ":/img/start_off.PNG"
+
+                    width: parent.width * 0.4
+                    height: width
+
+                    x: (parent.width - width) / 2
+                    y: parent.height * 0.195
+
+                    MouseArea {
+                        width: parent.width
+                        height: parent.height
+
+                        onClicked: {
+                            if(stories_view.mode === "stories")
+                            {
+                                episodes_json = ""
+                                container.getStoryManifest(stories_view.path)
+                            }
+                            else if(stories_view.mode === "episodes")
+                            {
+                                QuestJs.getQuest();
+                            }
+
+                            parent.source = ":/img/start_off.PNG"
+                        }
+
+                        onPressed: {
+                            parent.source = ":/img/start_on.PNG"
+                        }
                     }
                 }
             }
@@ -684,34 +1002,86 @@ Rectangle {
         Rectangle {
             id: back_button
 
-            width: 80
-            height: 80
+            width: height
+            height: play_button.height * 0.7
 
             x: 0
-            y: parent.height - 80
+            y: story_cover.height + (container.height - story_cover.height - height) / 2
 
             visible: (stories_view.mode === "episodes")
 
-            color: "lightsteelblue";
-            radius: 5
-            Text {
-                text: "back"
-                color: "white"
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
+            color: "transparent"
+
+            onVisibleChanged: {
+                if(visible === true)
+                    back_button_show_anim.start();
             }
+
+            NumberAnimation {
+                id: back_button_show_anim
+                target: back_button;
+                property: "x";
+                duration: 100;
+                easing.type: Easing.InOutQuad
+                from: -width
+                to: 0
+            }
+
+            NumberAnimation {
+                id: back_button_hide_anim
+                target: back_button;
+                property: "x";
+                duration: 100;
+                easing.type: Easing.InOutQuad
+                from: 0
+                to: -width
+            }
+
+            Image {
+                id: back_button_image
+                source: ":/img/back_for_button_2.PNG"
+
+                width: parent.width
+                height: parent.height
+
+                rotation: 180
+            }
+
+            Image {
+                id: back_button_arrow
+                source: ":/img/button_back_off.PNG"
+
+                width: parent.width * 0.55
+                height: width
+
+                x: back_button_image.width * 0.23
+                y: back_button_image.height * 0.235
+            }
+
+            //            Text {
+            //                text: "back"
+            //                color: "white"
+            //                anchors.verticalCenter: parent.verticalCenter
+            //                anchors.horizontalCenter: parent.horizontalCenter
+            //            }
 
             MouseArea {
                 width: parent.width
                 height: parent.height
 
                 onClicked: {
-//                    if(stories_view.mode === "stories")
-//                        container.getStoryManifest(stories_view.path)
+                    //                    if(stories_view.mode === "stories")
+                    //                        container.getStoryManifest(stories_view.path)
                     if(stories_view.mode === "episodes")
                     {
-                        stories_view.back()
+                        stories_view.back();
                     }
+
+                    back_button_arrow.source = ":/img/button_back_off.PNG";
+                }
+
+                onPressed: {
+                    back_button_arrow.source = ":/img/button_back_on.PNG";
                 }
             }
         }

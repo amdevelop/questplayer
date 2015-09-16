@@ -8,17 +8,22 @@ Rectangle {
 //    x: quest_menu.width / 2 - width / 2
 //    y: (quest_menu.height - (28 * 2 + 10)) / 2 + 28 + 10
 
-    width: 110
-    height: 28
+//    width: parent.width * 0.9
+//    height: 28
 
     color: "transparent"
-    border.color: "blue"
 
-    radius: 3;
+    Image{
+        id: button_image
+        source: ":/img/button_off.PNG"
+
+        width: parent.width
+        height: parent.height
+    }
 
     Text{
         text: button_text
-        color: parent.border.color
+        color: "white"
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter

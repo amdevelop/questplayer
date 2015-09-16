@@ -27,7 +27,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     vbLayout.setMargin(0);
     vbLayout.addWidget(&dv);
-    conatiner.resize(800, 600);
+    conatiner.resize(640, 480);
     conatiner.show();
 
     dv.setResizeMode(QDeclarativeView::SizeRootObjectToView);

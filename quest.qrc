@@ -4,5 +4,18 @@
         <file>qml/qestplayer/main.qml</file>
         <file>qml/qestplayer/MenuButton.qml</file>
         <file>qml/qestplayer/ItemImage.qml</file>
+        <file>img/button_off.PNG</file>
+        <file>img/button_on.PNG</file>
+        <file>img/back_for_button_2.PNG</file>
+        <file>img/back_for_button_start.PNG</file>
+        <file>img/start_off.PNG</file>
+        <file>img/menu_back.png</file>
+        <file>img/start_on.PNG</file>
+        <file>img/button_back_off.PNG</file>
+        <file>img/button_back_on.PNG</file>
+        <file>img/menu_bottom.png</file>
+        <file>img/pause_back.png</file>
+        <file>img/button_pause_off.PNG</file>
+        <file>img/button_pause_on.PNG</file>
     </qresource>
 </RCC>

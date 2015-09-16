@@ -95,10 +95,10 @@ function initQuest(current_number)
     else
         episode_title.text = "Episode";
 
-    episode_cover.source =
-            quest_path + container.path_separator +
+//    episode_cover.source =
+//            quest_path + container.path_separator +
 //            quest_data.episode.id + "/" +
-            quest_data.episode.cover;
+//            quest_data.episode.cover;
 }
 
 function startQuest() {
@@ -145,6 +145,8 @@ function gameOver()
     console.log("compare ", (tmp_episode + 1), all_episode_count)
 
     next_button.visible = false;
+
+    pause_hide_anim.start();
 
 //    if((1 + tmp_episode) > all_episode_count)
 //        next_button.visible = false;
