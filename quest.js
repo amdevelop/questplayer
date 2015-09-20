@@ -147,6 +147,7 @@ function gameOver()
     next_button.visible = false;
 
     pause_hide_anim.start();
+    item_menu_hide_anim.start();
 
 //    if((1 + tmp_episode) > all_episode_count)
 //        next_button.visible = false;

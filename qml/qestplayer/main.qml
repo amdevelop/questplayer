@@ -159,7 +159,7 @@ Rectangle {
             height: parent.height
 
             onClicked: {
-                if(quest_menu.visible)
+                if(quest_menu.visible === true)
                     quest_menu.visible = false;
                 else
                 {
@@ -179,8 +179,6 @@ Rectangle {
         }
     }
 
-
-
     Rectangle {
         id: item_menu_button
 
@@ -189,15 +187,15 @@ Rectangle {
 
         x: 0 // parent.width - width
         y: 0
-        z: 301
+        z: item_menu.z + 1
 
         color: "transparent";
-        rotation: 180
+//        rotation: 180
 
         Image {
             id: item_menu_button_image
 
-            source: ":/img/back_for_button_2.PNG"
+            source: ":/img/back_for_button_1.PNG"
 
             width: parent.width
             height: parent.height
@@ -210,7 +208,7 @@ Rectangle {
             width: parent.width * 0.55
             height: width
 
-            x: item_menu_button_image.width * 0.22
+            x: item_menu_button_image.width * 0.23
             y: item_menu_button_image.height * 0.205
         }
 
@@ -252,7 +250,7 @@ Rectangle {
                         item_menu_hide_anim.start();
                     }
 
-                    item_menu_button_icon.source = ":/img/start_off.PNG";
+//                    item_menu_button_icon.source = ":/img/start_off.PNG";
                 }
 
             }
@@ -284,7 +282,7 @@ Rectangle {
 
         visible: false
 
-        z: 505
+        z: 540
 
         Rectangle {
             id: pause_rectangle
@@ -454,7 +452,7 @@ Rectangle {
         id: item_menu
 
         x: -width
-        z: 504
+        z: 520
 
         width: 100
         height: container.height
@@ -526,7 +524,7 @@ Rectangle {
 
         visible: false
 
-        z: 502
+        z: 530
 
         Rectangle {
             width: parent.width
@@ -643,7 +641,7 @@ Rectangle {
 
         property real koef: 0.0
 
-        z: 503
+        z: 510
 
         Image {
             width: parent.width
@@ -716,7 +714,7 @@ Rectangle {
         width: parent.width
         height: parent.height
 
-        z: 504
+        z: 550
         property string mode: "stories"
         property string path_story_id: ""
         property string path_episode_id: ""
@@ -738,8 +736,9 @@ Rectangle {
             x:0
             y:0
 
-            //            width: parent.width // - stories_listview.width
-            //            height: 100 // parent.height  // - play_button.height
+            width: stories_view.width - stories_listview.width
+            height: parent.height * 0.8 // - play_button.height
+
 
             id: story_cover
 
@@ -851,7 +850,9 @@ Rectangle {
 
                 Text {
                     text: title
+                    //                    color: (stories_listview.currentIndex == index)?"#A1A1A1":"white"
                     color: "white"
+//                    font.bold: true
                     anchors.verticalCenter: delegate_image.verticalCenter
                     anchors.horizontalCenter: delegate_image.horizontalCenter
                 }
@@ -877,7 +878,7 @@ Rectangle {
         ListView {
             id: stories_listview
 
-            width: parent.width * (1 - 0.68)
+            width: parent.width * 0.3
             height: parent.height - play_button.height
             anchors.right: parent.right
             model: stories_model
@@ -903,12 +904,12 @@ Rectangle {
                 // чтобы вписывалась в концепцию -
                 // справа - упирается в список
                 // снизу - в кнопку Play
-                story_cover.width =
-                        stories_view.width - stories_listview.width;
+//                story_cover.width =
+//                        stories_view.width - stories_listview.width;
 
-                story_cover.height =
+//                story_cover.height =
                         //stories_view.height - play_button.height;
-                        parent.height * 0.8
+//                        parent.height * 0.8
 
                 console.log("stories cover "
                             + story_cover.source)
@@ -1003,10 +1004,12 @@ Rectangle {
             id: back_button
 
             width: height
-            height: play_button.height * 0.7
+            height: menu_bottom_img.height * 0.7
 
             x: 0
-            y: story_cover.height + (container.height - story_cover.height - height) / 2
+//            y: story_cover.height + (container.height - story_cover.height - height) / 2
+            y: menu_bottom_img.y + menu_bottom_img.height * 0.25
+
 
             visible: (stories_view.mode === "episodes")
 
@@ -1039,12 +1042,12 @@ Rectangle {
 
             Image {
                 id: back_button_image
-                source: ":/img/back_for_button_2.PNG"
+                source: ":/img/back_for_button_1.PNG"
 
                 width: parent.width
                 height: parent.height
 
-                rotation: 180
+//                rotation: 180
             }
 
             Image {
@@ -1055,7 +1058,7 @@ Rectangle {
                 height: width
 
                 x: back_button_image.width * 0.23
-                y: back_button_image.height * 0.235
+                y: back_button_image.height * 0.2
             }
 
             //            Text {

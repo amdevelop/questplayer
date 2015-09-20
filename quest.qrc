@@ -17,5 +17,6 @@
         <file>img/pause_back.png</file>
         <file>img/button_pause_off.PNG</file>
         <file>img/button_pause_on.PNG</file>
+        <file>img/back_for_button_1.PNG</file>
     </qresource>
 </RCC>
