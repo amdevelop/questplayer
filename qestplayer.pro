@@ -16,6 +16,14 @@ QML_IMPORT_PATH =
 # Speed up launching on MeeGo/Harmattan when using applauncherd daemon
 # CONFIG += qdeclarative-boostable
 
+
+CONFIG(release, debug|release) {
+    #This is a release build
+    DEFINES += PLAYER_RELEASE
+} else {
+    #This is a debug build
+}
+
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     polygonitem.cpp \
@@ -40,3 +48,14 @@ HEADERS += \
     polygonitem.h \
     questremotecreator.h \
     defines.h
+
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat
+
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

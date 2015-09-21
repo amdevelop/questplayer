@@ -15,7 +15,7 @@ Rectangle {
 
     Image{
         id: button_image
-        source: ":/img/button_off.PNG"
+        source: "qrc:/img/button_off.PNG"
 
         width: parent.width
         height: parent.height

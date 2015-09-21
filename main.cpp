@@ -37,7 +37,11 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 //                               "quest_manifest.json",
 //                               dv.rootObject(),
 //                               QuestRemoteCreator::ModeOffline);
+#ifdef PLAYER_RELEASE
+    QuestRemoteCreator creator("http://matal.ru/quests",
+#else
     QuestRemoteCreator creator("http://quest:8888/quests",
+#endif
                                P_MANIFEST_MAIN,
                                dv.rootObject(),
                                QuestRemoteCreator::ModeOnline);

@@ -109,7 +109,7 @@ Rectangle {
         Image {
             id: pause_button_image
 
-            source: ":/img/back_for_button_2.PNG"
+            source: "qrc:/img/back_for_button_2.PNG"
 
             width: parent.width
             height: parent.height
@@ -117,7 +117,7 @@ Rectangle {
 
         Image {
             id: pause_button_icon
-            source: ":/img/button_pause_off.PNG"
+            source: "qrc:/img/button_pause_off.PNG"
 
             width: parent.width * 0.55
             height: width
@@ -170,11 +170,11 @@ Rectangle {
                     pause_hide_anim.start();
                     item_menu_hide_anim.start();
                 }
-                pause_button_icon.source = ":/img/button_pause_off.PNG";
+                pause_button_icon.source = "qrc:/img/button_pause_off.PNG";
             }
 
             onPressed: {
-                pause_button_icon.source = ":/img/button_pause_on.PNG";
+                pause_button_icon.source = "qrc:/img/button_pause_on.PNG";
             }
         }
     }
@@ -195,7 +195,7 @@ Rectangle {
         Image {
             id: item_menu_button_image
 
-            source: ":/img/back_for_button_1.PNG"
+            source: "qrc:/img/back_for_button_1.PNG"
 
             width: parent.width
             height: parent.height
@@ -203,7 +203,7 @@ Rectangle {
 
         Image {
             id: item_menu_button_icon
-            source: ":/img/start_off.PNG"
+            source: "qrc:/img/start_off.PNG"
 
             width: parent.width * 0.55
             height: width
@@ -250,13 +250,13 @@ Rectangle {
                         item_menu_hide_anim.start();
                     }
 
-//                    item_menu_button_icon.source = ":/img/start_off.PNG";
+//                    item_menu_button_icon.source = "qrc:/img/start_off.PNG";
                 }
 
             }
 
             onPressed: {
-                item_menu_button_icon.source = ":/img/start_off.PNG";
+                item_menu_button_icon.source = "qrc:/img/start_off.PNG";
             }
         }
     }
@@ -308,7 +308,7 @@ Rectangle {
 
             x: parent.width * 0.33
 
-            source: ":/img/pause_back.png"
+            source: "qrc:/img/pause_back.png"
 
 
 
@@ -345,11 +345,11 @@ Rectangle {
                             item_menu_show_anim.start();
 
                             //                            this/
-                            this.button_image.source = ":/img/button_off.PNG"
+                            this.button_image.source = "qrc:/img/button_off.PNG"
                         }
 
                         onPressed: {
-                            //                            button_image.source = ":/img/button_on.PNG"
+                            //                            button_image.source = "qrc:/img/button_on.PNG"
                         }
                     }
                 }
@@ -381,12 +381,12 @@ Rectangle {
                             pause_show_anim.start();
                             item_menu_show_anim.start();
 
-                            //                            button_image.source = ":/img/button_off.PNG"
+                            //                            button_image.source = "qrc:/img/button_off.PNG"
 
                         }
 
                         onPressed: {
-                            //                            button_image.source = ":/img/button_on.PNG"
+                            //                            button_image.source = "qrc:/img/button_on.PNG"
                         }
                     }
                 }
@@ -562,7 +562,7 @@ Rectangle {
 
             Image {
                 id: skip_button_image
-                source: ":/img/back_for_button_2.PNG"
+                source: "qrc:/img/back_for_button_2.PNG"
 
                 width: parent.width
                 height: parent.height
@@ -570,7 +570,7 @@ Rectangle {
 
             Image {
                 id: skip_button_arrow
-                source: ":/img/start_off.PNG"
+                source: "qrc:/img/start_off.PNG"
 
                 width: parent.width * 0.55
                 height: width
@@ -585,11 +585,11 @@ Rectangle {
 
                 onClicked: {
                     QuestJs.skip();
-                    skip_button_arrow.source = ":/img/start_off.PNG";
+                    skip_button_arrow.source = "qrc:/img/start_off.PNG";
                 }
 
                 onPressed: {
-                    skip_button_arrow.source = ":/img/start_on.PNG";
+                    skip_button_arrow.source = "qrc:/img/start_on.PNG";
                 }
             }
         }
@@ -804,7 +804,7 @@ Rectangle {
 
             // НИЖНЯЯ КАРТИНКА В МЕНЮ
             id: menu_bottom_img
-            source: ":/img/menu_bottom.png"
+            source: "qrc:/img/menu_bottom.png"
 
 
             // сначала узнаем ее ЧИСТЫЙ размер -
@@ -826,7 +826,7 @@ Rectangle {
 
                 Image {
                     id: delegate_image
-                    source: (stories_listview.currentIndex != index)?":/img/button_off.PNG":":/img/button_on.PNG"
+                    source: (stories_listview.currentIndex != index)?"qrc:/img/button_off.PNG":"qrc:/img/button_on.PNG"
 
                     width: parent.width * 0.85
                     height: parent.height
@@ -925,7 +925,7 @@ Rectangle {
 
             Image {
                 id: menu_back
-                source: ":/img/menu_back.png"
+                source: "qrc:/img/menu_back.png"
 
                 width: stories_listview.width
                 height: container.height
@@ -959,14 +959,14 @@ Rectangle {
 
             Image {
                 id: play_button_image
-                source: ":/img/back_for_button_start.PNG"
+                source: "qrc:/img/back_for_button_start.PNG"
 
                 width: parent.width
                 height: parent.width * 0.67 // dirty hack...
 
                 Image {
                     id: play_button_arrow
-                    source: ":/img/start_off.PNG"
+                    source: "qrc:/img/start_off.PNG"
 
                     width: parent.width * 0.4
                     height: width
@@ -989,11 +989,11 @@ Rectangle {
                                 QuestJs.getQuest();
                             }
 
-                            parent.source = ":/img/start_off.PNG"
+                            parent.source = "qrc:/img/start_off.PNG"
                         }
 
                         onPressed: {
-                            parent.source = ":/img/start_on.PNG"
+                            parent.source = "qrc:/img/start_on.PNG"
                         }
                     }
                 }
@@ -1042,7 +1042,7 @@ Rectangle {
 
             Image {
                 id: back_button_image
-                source: ":/img/back_for_button_1.PNG"
+                source: "qrc:/img/back_for_button_1.PNG"
 
                 width: parent.width
                 height: parent.height
@@ -1052,7 +1052,7 @@ Rectangle {
 
             Image {
                 id: back_button_arrow
-                source: ":/img/button_back_off.PNG"
+                source: "qrc:/img/button_back_off.PNG"
 
                 width: parent.width * 0.55
                 height: width
@@ -1080,11 +1080,11 @@ Rectangle {
                         stories_view.back();
                     }
 
-                    back_button_arrow.source = ":/img/button_back_off.PNG";
+                    back_button_arrow.source = "qrc:/img/button_back_off.PNG";
                 }
 
                 onPressed: {
-                    back_button_arrow.source = ":/img/button_back_on.PNG";
+                    back_button_arrow.source = "qrc:/img/button_back_on.PNG";
                 }
             }
         }
