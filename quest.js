@@ -327,6 +327,8 @@ function drawScene()
             var item_title;
             if(current_item.title === null)
                 item_title = "Item";
+            else
+                item_title = current_item.title;
 
             item_model.append({ "item" : item_title, "item_color": "white"});
 
