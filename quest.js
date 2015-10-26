@@ -378,6 +378,7 @@ function drawScene()
     scene_images_count = current_scene.items.length;
     skip_button.visible = false;
     can_show_skip = false;
+    progress_bar.visible = true;
 
     for(i = 0; i < current_scene.items.length; i++)
     {

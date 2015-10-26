@@ -541,8 +541,8 @@ Rectangle {
             x: -parent.width * 0.1
             y: -parent.height * 0.1 + fiction_flickable.visibleArea.yPosition * (parent.height * 0.05)
 
-            width: parent.width + parent.width * 0.1
-            height: parent.height + parent.height * 0.1
+            width: parent.width + parent.width * 0.2
+            height: parent.height + parent.height * 0.2
 
             source: story_cover.source // todo: может надо переделать
 
@@ -555,7 +555,6 @@ Rectangle {
 
                 color: "black"
                 opacity: 0.5
-
 
                 MouseArea {
                     width: parent.width
@@ -665,7 +664,7 @@ Rectangle {
 
             opacity: 0
 
-            width: 300
+            width: parent.width * 0.8
             height: 100 // (width / 16) * 9 // parent.height
 
             anchors.centerIn: parent
