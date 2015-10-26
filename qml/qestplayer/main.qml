@@ -417,21 +417,21 @@ Rectangle {
                     }
                 }
             }
-
-
-
-
-
         }
 
         Text{
             id: episode_title
-            font.pixelSize: 28
+            font.pixelSize: 24
+
+            wrapMode: Text.WordWrap
 
             color: "white"
 
             y: (container.height * (1/3)) / 2
             x: container.width / 2 - width / 2
+
+            width: pause_back_img.width
+            horizontalAlignment: Text.AlignHCenter
 
             style: Text.Raised; styleColor: "#AAAAAA"
         }
