@@ -7,11 +7,14 @@
 
 #include "defines.h"
 
+#include <QGraphicsBlurEffect>
+
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
     QScopedPointer<QApplication> app(createApplication(argc, argv));
 
     qmlRegisterType<PolygonItem>("QuestItems", 1, 0, "QuestPolygon");
+    qmlRegisterType<QGraphicsBlurEffect>("Effects",1,0,"Blur");
 
 //    QmlApplicationViewer viewer;
 //    viewer.addImportPath(QLatin1String("modules"));

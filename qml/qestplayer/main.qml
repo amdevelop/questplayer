@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import Effects 1.0
 //import MenuButton 1.0
 
 import "qrc:/quest.js" as QuestJs
@@ -74,6 +75,11 @@ Rectangle {
             }
             event.accepted = true;
         }
+    }
+
+    function loadImage()
+    {
+        QuestJs.loadImage();
     }
 
     // QUEST ITEMS !!!
@@ -517,6 +523,8 @@ Rectangle {
     Rectangle{
         id: info_view
 
+//        property string bg_path: ""
+
         width: parent.width
         height: parent.height
 
@@ -526,21 +534,50 @@ Rectangle {
 
         z: 530
 
-        Rectangle {
-            width: parent.width
-            height: parent.height
 
-            color: "black"
-            opacity: 0.7
+        Image {
+            id: fiction_background
 
-            MouseArea {
-                width: parent.width
-                height: parent.height
+            x: -parent.width * 0.1
+            y: -parent.height * 0.1 + fiction_flickable.visibleArea.yPosition * (parent.height * 0.05)
 
-                onClicked: {}
+            width: parent.width + parent.width * 0.1
+            height: parent.height + parent.height * 0.1
+
+            source: story_cover.source // todo: может надо переделать
+
+            effect: Blur {
+                blurRadius: 10
+            }
+            Rectangle {
+                width: fiction_background.width
+                height: fiction_background.height
+
+                color: "black"
+                opacity: 0.5
+
+
+                MouseArea {
+                    width: parent.width
+                    height: parent.height
+
+                    onClicked: {}
+                }
             }
         }
 
+        Rectangle
+        {
+            id: progress_bar
+
+            x: fiction_flickable.x
+            y: (container.height - fiction_flickable.height) / 4
+
+            width: fiction_flickable.width
+            height: 5
+
+            color: "black"
+        }
 
         Rectangle {
             id: skip_button
@@ -548,17 +585,10 @@ Rectangle {
             width: height
             height: play_button.height * 0.7
 
-            x: parent.width - width
+            x: parent.width //  - width
             y: 0
 
-
             color: "transparent";
-            //            Text {
-            //                text: "skip"
-            //                color: "white"
-            //                anchors.verticalCenter: parent.verticalCenter
-            //                anchors.horizontalCenter: parent.horizontalCenter
-            //            }
 
             Image {
                 id: skip_button_image
@@ -592,6 +622,28 @@ Rectangle {
                     skip_button_arrow.source = "qrc:/img/start_on.PNG";
                 }
             }
+
+            NumberAnimation{
+                id: skip_show_anim
+                target: skip_button
+                property: "x"
+                duration: 100;
+                easing.type: Easing.InOutQuad;
+
+                from: container.width
+                to: container.width - skip_button.width
+            }
+
+//            NumberAnimation {
+//                id: skip_hide_anim
+//                target: skip_button
+//                property: "x"
+//                duration: 100;
+//                easing.type: Easing.InOutQuad;
+
+//                from: container.width - skip_button.width
+//                to: container.width
+//            }
         }
 
 
@@ -600,6 +652,57 @@ Rectangle {
             interval: 2000
             repeat: true
             onTriggered: {console.log("LL");QuestJs.infoShown();}
+        }
+
+        Flickable {
+
+            id: fiction_flickable
+
+            onMovementEnded: {
+                if((visibleArea.heightRatio + visibleArea.yPosition) > 0.9)
+                    QuestJs.showSkipButton();
+            }
+
+            opacity: 0
+
+            width: 300
+            height: 100 // (width / 16) * 9 // parent.height
+
+            anchors.centerIn: parent
+
+            contentWidth: width
+            contentHeight: fiction_text.height
+
+            x: skip_button.width
+//            boundsBehavior: Flickable.DragOverBounds
+            clip: true
+
+            Text {
+                id: fiction_text
+                text: ""
+
+                width: parent.width
+//                height: parent.height
+
+                wrapMode: Text.WordWrap
+
+                font.pixelSize: 14
+
+                color: "white"
+            }
+
+            NumberAnimation on opacity {
+                id: anim_fiction_text_show;
+                from: 0; to: 1;
+                duration: 1000;
+                easing.type: Easing.Linear
+            }
+            NumberAnimation on opacity {
+                id: anim_fiction_text_hide;
+                from: 1; to: 0;
+                duration: 1000;
+                easing.type: Easing.Linear
+            }
         }
 
         Text{

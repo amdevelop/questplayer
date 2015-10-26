@@ -77,11 +77,17 @@ var act_scene_counter = 0;
 var scene_items = [];
 var scene_item_map = {};
 var scene_interior_list = [];
+var scene_images_count = 0;
+var scene_images_load = 0;
+
+var scene_progress_rect_list = [];
+var can_show_skip = false;
 
 var info_show_type = "";
 
 var all_episode_count = -1;
 var current_episode_count = -1;
+
 
 function initQuest(current_number)
 {
@@ -115,9 +121,16 @@ function clearScene()
     for(i = 0; i < scene_interior_list.length; i++)
         scene_interior_list[i].destroy();
 
+    for(i = 0; i < scene_progress_rect_list.length; i++)
+        scene_progress_rect_list[i].destroy();
+
     scene_items = [];
     scene_item_map = {};
     scene_interior_list = [];
+
+    scene_progress_rect_list = [];
+
+    fiction_text.text = "";
 }
 
 function clearGame()
@@ -170,48 +183,51 @@ function infoShown()
     else if(info_show_type === "scene_begin")
     {
         info_show_type = "scene_end";
-        anim_info_text_hide.start();
+
+//       info_show_subtype === "scene_show"
+
+        timer_animation_show.stop();
     }
     else if(info_show_type === "scene_end")
     {
 //        drawScene();
-        info_view.visible = false;
-        timer_animation_show.stop();
+       fiction_flickable.opacity = 0;
+       info_view.visible = false;
     }
 }
 
 function skip()
 {
     if(info_show_type === "act_begin")
-     {
-         info_show_type = "act_end";
-         timer_animation_show.stop();
-         anim_info_text_show.stop();
+    {
+        info_show_type = "act_end";
+        timer_animation_show.stop();
+        anim_info_text_show.stop();
 
-         info_text.opacity = 1.0;
-         timer_animation_show.start();
-     }
-     else if(info_show_type === "act_end")
-     {
+        info_text.opacity = 1.0;
+        timer_animation_show.start();
+    }
+    else if(info_show_type === "act_end")
+    {
         info_show_type = "act_end";
         timer_animation_show.stop();
         anim_info_text_hide.stop();
 
         info_text.opacity = 1.0;
         timer_animation_show.start();
-     }
-     else if(info_show_type === "scene_begin")
-     {
+    }
+    else if(info_show_type === "scene_begin")
+    {
         info_show_type = "scene_end";
         anim_info_text_show.stop();
         info_text.opacity = 1.0;
-     }
-     else if(info_show_type === "scene_end")
-     {
+    }
+    else if(info_show_type === "scene_end")
+    {
         info_show_type = "scene_end";
         anim_info_text_hide.stop();
         info_text.opacity = 1.0;
-     }
+    }
 
     infoShown();
 }
@@ -229,7 +245,6 @@ function nextAct()
             current_scene = current_act.scenes[act_scene_counter];
 
             drawScene();
-//            act_scene_counter++;
         }
 
         if(current_act.title !== "" ||
@@ -261,12 +276,42 @@ function nextScene()
 //        current_scene = current_act.scenes[act_scene_counter];
 
         info_view.visible = true;
+
         info_show_type = "scene_begin";
-        if(current_scene.title !== null)
-            info_text.text = current_scene.title;
+//        if(current_scene.title !== null)
+//            info_text.text = current_scene.title;
+//        else
+//            info_text.text = "Scene";
+
+        if(current_scene.description !== null &&
+           current_scene.description !== "")
+        {
+//            fiction_text.text = current_scene.description;
+
+            fiction_text.text = "Стоянка перед мотелем была заполнена автомобилями. В другой день владелец мотеля был бы рад такому наплыву клиентов, но не сегодня - от такого количества полицейских машин любому станет не по себе. Среди нескольких служебных автомобилей Клиффард разглядел серый седан Джайны. Одинаковые, с облупившейся краской двери номеров мотеля были закрыты, кроме одной, возле которой было выставлено ограждение и охрана. - вот и доброе утро... - пробормотал Клиффард. Он подошел к желтой заградительной ленте и показал жетон.";
+
+            anim_fiction_text_show.start();
+
+            // эта проверка на случай, если не надо прокручивать
+            // рассказ
+            if((fiction_flickable.visibleArea.heightRatio +
+                fiction_flickable.visibleArea.yPosition) > 0.9)
+                showSkipButton();
+        }
         else
-            info_text.text = "Scene";
-        anim_info_text_show.start();
+        {
+            if(current_scene.title !== null &&
+               current_scene.title !== "")
+                info_text.text = current_scene.title;
+            else
+                info_text.text = "Scene";
+
+            anim_info_text_show.start();
+
+            showSkipButton();
+        }
+
+        /// todo: вот здесь закомментировано что
         if(timer_animation_show.running !== true)
             timer_animation_show.start();
 
@@ -274,6 +319,45 @@ function nextScene()
     }
     else
         nextAct();
+}
+
+function loadImage()
+{
+    var progress_rect = Qt.createQmlObject(
+                        'import QtQuick 1.1; Rectangle {}',
+                        progress_bar,
+                        "progress_item" + scene_images_load.toString());
+
+    progress_rect.width = progress_bar.width / scene_images_count;
+    progress_rect.height = progress_bar.height;
+
+    progress_rect.color = "red";
+    progress_rect.x = progress_rect.width * (scene_images_load);
+
+    scene_progress_rect_list[scene_images_load] = progress_rect;
+
+    scene_images_load++;
+    if(scene_images_load == scene_images_count)
+    {
+        progress_bar.visible = false;
+        showSkipButton();
+    }
+}
+
+function showSkipButton()
+{
+    if(can_show_skip)
+    {
+        if(skip_button.visible === false)
+        {
+            skip_button.visible = true;
+            skip_show_anim.start();
+        }
+    }
+    else
+    {
+        can_show_skip = true;
+    }
 }
 
 function drawScene()
@@ -296,23 +380,38 @@ function drawScene()
 
     var i;
     var item_counter = 0;
+
+    scene_images_load = 0;
+    scene_images_count = current_scene.items.length;
+    skip_button.visible = false;
+    can_show_skip = false;
+
     for(i = 0; i < current_scene.items.length; i++)
     {
         var current_item = current_scene.items[i];
 
-        console.log("LOL!");
-        console.log(i);
+//        console.log("LOL!");
+//        console.log(i);
 
         var interior_item = null;
-        interior_item = Qt.createQmlObject(
-                    'import QtQuick 1.1; Image {}',
-                    container,
-                    "interior_item" + i.toString());
+
+        var component = Qt.createComponent("ItemImage.qml");
+
+        if (component.status == Component.Ready) {
+
+//        interior_item = Qt.createQmlObject(
+//                    'import QtQuick 1.1; Image {onStatusChanged: { if (status == Image.Ready) QuestJs.loadImage();}}',
+//                    container,
+//                    "interior_item" + i.toString());
+            interior_item = component.createObject(container);
+        }
 
         interior_item.source =
                 base_path +
                 current_item.id + container.path_separator +
                 current_item.image;
+
+
 
         interior_item.x = current_item.scene_x * container.width;
         interior_item.y = current_item.scene_y * container.height;
@@ -356,6 +455,21 @@ function initalizeInterior(interior_item, current_item)
 
 }
 
+function checkScene()
+{
+    var found_counter = 0;
+    var i = 0;
+
+    for(i = 0; i < scene_items.length; i++)
+    {
+        if(scene_items[i].found)
+            found_counter++;
+    }
+
+    if(found_counter == scene_items.length)
+        nextScene();
+}
+
 function checkCollisions(mouseX, mouseY)
 {
     var i;
@@ -369,11 +483,11 @@ function checkCollisions(mouseX, mouseY)
             {
                 tmp_item = scene_item_map[scene_items[i]];
 
-                console.log("found");
+//                console.log("found");
                 if(tmp_item)
                 {
 //                    tmp_item.found = true;
-                    console.log("found");
+//                    console.log("found");
 
                                             showDetail(tmp_item,
                                                        mouseX,
@@ -391,21 +505,6 @@ function checkCollisions(mouseX, mouseY)
             if(scene_item_map[scene_items[i]] === tmp_item)
                 scene_items[i].found = true;
     }
-}
-
-function checkScene()
-{
-    var found_counter = 0;
-    var i = 0;
-
-    for(i = 0; i < scene_items.length; i++)
-    {
-        if(scene_items[i].found)
-            found_counter++;
-    }
-
-    if(found_counter == scene_items.length)
-        nextScene();
 }
 
 function showDetail(item_data, startX, startY)
