@@ -100,14 +100,13 @@ function initQuest(current_number)
         episode_title.text = quest_data.episode.title;
     else
         episode_title.text = "Episode";
-
-//    episode_cover.source =
-//            quest_path + container.path_separator +
-//            quest_data.episode.id + "/" +
-//            quest_data.episode.cover;
 }
 
 function startQuest() {
+    next_button.visible = false;
+    resume_button.visible = true;
+    restart_button.visible = false;
+
     if(current_act == null)
         nextAct();
 }
@@ -131,6 +130,7 @@ function clearScene()
     scene_progress_rect_list = [];
 
     fiction_text.text = "";
+    fiction_text_preview.text = "";
 }
 
 function clearGame()
@@ -149,29 +149,23 @@ function gameOver()
 {
     clearGame();
 
-    episode_title.text = "Game over!";
-
     quest_menu.visible = true;
     anim.start();
 
     var tmp_episode = parseInt(current_episode_count, 10);
     console.log("compare ", (tmp_episode + 1), all_episode_count)
 
-    next_button.visible = false;
+    next_button.visible = true;
+    resume_button.visible = false;
+    restart_button.visible = true;
 
     pause_hide_anim.start();
     item_menu_hide_anim.start();
-
-//    if((1 + tmp_episode) > all_episode_count)
-//        next_button.visible = false;
-//    else
-//        next_button.visible = true;
 }
-
 
 function infoShown()
 {
-   if(info_show_type === "act_begin")
+    if(info_show_type === "act_begin")
     {
         info_show_type = "act_end";
         anim_info_text_hide.start();
@@ -184,15 +178,13 @@ function infoShown()
     {
         info_show_type = "scene_end";
 
-//       info_show_subtype === "scene_show"
-
         timer_animation_show.stop();
     }
     else if(info_show_type === "scene_end")
     {
-//        drawScene();
-       fiction_flickable.opacity = 0;
-       info_view.visible = false;
+        fiction_flickable.visible = false;
+
+        info_view.visible = false;
     }
 }
 
@@ -220,13 +212,11 @@ function skip()
     {
         info_show_type = "scene_end";
         anim_info_text_show.stop();
-        info_text.opacity = 1.0;
     }
     else if(info_show_type === "scene_end")
     {
         info_show_type = "scene_end";
         anim_info_text_hide.stop();
-        info_text.opacity = 1.0;
     }
 
     infoShown();
@@ -239,16 +229,14 @@ function nextAct()
         current_act = quest_data.episode.acts[act_counter];
 
         if(act_scene_counter + 1 <= current_act.scenes.length)
-        {
+        { 
             clearScene();
-
             current_scene = current_act.scenes[act_scene_counter];
-
             drawScene();
         }
 
         if(current_act.title !== "" ||
-           current_act.title !== null)
+                current_act.title !== null)
         {
             info_view.visible = true;
             info_show_type = "act_begin";
@@ -266,35 +254,53 @@ function nextAct()
         gameOver();
 }
 
-
-
 function nextScene()
 {
     if(act_scene_counter + 1 <= current_act.scenes.length)
     {
-        info_view.visible = true;
-
         info_show_type = "scene_begin";
 
-        if(current_scene.description !== null &&
-           current_scene.description !== "")
+        if(current_scene.description != null &&
+                current_scene.description !== "")
         {
-            fiction_text.text = current_scene.description;
+//            fiction_text.text = current_scene.description;
 
-//            fiction_text.text = "Стоянка перед мотелем была заполнена автомобилями. В другой день владелец мотеля был бы рад такому наплыву клиентов, но не сегодня - от такого количества полицейских машин любому станет не по себе. Среди нескольких служебных автомобилей Клиффард разглядел серый седан Джайны. Одинаковые, с облупившейся краской двери номеров мотеля были закрыты, кроме одной, возле которой было выставлено ограждение и охрана. - вот и доброе утро... - пробормотал Клиффард. Он подошел к желтой заградительной ленте и показал жетон.";
+//            var test_text = "Стоянка перед мотелем была заполнена автомобилями. В другой день владелец мотеля был бы рад такому наплыву клиентов, но не сегодня - от такого количества полицейских машин любому станет не по себе.___PREWIEW_MARKER___Среди нескольких служебных автомобилей Клиффард разглядел серый седан Джайны. Одинаковые, с облупившейся краской двери номеров мотеля были закрыты, кроме одной, возле которой было выставлено ограждение и охрана. - вот и доброе утро... - пробормотал Клиффард. Он подошел к желтой заградительной ленте и показал жетон.";
+            var test_text = current_scene.description;
+            var text_array = test_text.split("___PREWIEW_MARKER___");
+
+            var description = text_array[0];
+
+            if(text_array.length > 1)
+            {
+                if(description[description.length - 1] === ".")
+                    description = description.substring(0, description.length - 1);
+
+                description += "...<br><a href=\"read_more\">read more</a>"
+                fiction_text.text = text_array.join();
+            }
+
+            fiction_flickable.visible = false;
+            fiction_text_preview.text = description;
+
+            fiction_text_preview.opacity = 0;
+            if(!fiction_text_preview.visible)
+                fiction_text_preview.visible = true;
 
             anim_fiction_text_show.start();
 
+            showSkipButton();
+
             // эта проверка на случай, если не надо прокручивать
             // рассказ
-            if((fiction_flickable.visibleArea.heightRatio +
-                fiction_flickable.visibleArea.yPosition) > 0.9)
-                showSkipButton();
+//            if((fiction_flickable.visibleArea.heightRatio +
+//                fiction_flickable.visibleArea.yPosition) > 0.9)
+//                showSkipButton();
         }
         else
         {
-            if(current_scene.title !== null &&
-               current_scene.title !== "")
+            if(current_scene.title != null &&
+                    current_scene.title !== "")
                 info_text.text = current_scene.title;
             else
                 info_text.text = "Scene";
@@ -304,11 +310,8 @@ function nextScene()
             showSkipButton();
         }
 
-        /// todo: вот здесь закомментировано что
         if(timer_animation_show.running !== true)
             timer_animation_show.start();
-
-        act_scene_counter++;
     }
     else
         nextAct();
@@ -317,14 +320,14 @@ function nextScene()
 function loadImage()
 {
     var progress_rect = Qt.createQmlObject(
-                        'import QtQuick 1.1; Rectangle {}',
-                        progress_bar,
-                        "progress_item" + scene_images_load.toString());
+                'import QtQuick 1.1; Rectangle {}',
+                progress_bar,
+                "progress_item" + scene_images_load.toString());
 
     progress_rect.width = progress_bar.width / scene_images_count;
     progress_rect.height = progress_bar.height;
 
-    progress_rect.color = "red";
+    progress_rect.color = "white";
     progress_rect.x = progress_rect.width * (scene_images_load);
 
     scene_progress_rect_list[scene_images_load] = progress_rect;
@@ -384,8 +387,8 @@ function drawScene()
     {
         var current_item = current_scene.items[i];
 
-//        console.log("LOL!");
-//        console.log(i);
+        //        console.log("LOL!");
+        //        console.log(i);
 
         var interior_item = null;
 
@@ -393,10 +396,10 @@ function drawScene()
 
         if (component.status == Component.Ready) {
 
-//        interior_item = Qt.createQmlObject(
-//                    'import QtQuick 1.1; Image {onStatusChanged: { if (status == Image.Ready) QuestJs.loadImage();}}',
-//                    container,
-//                    "interior_item" + i.toString());
+            //        interior_item = Qt.createQmlObject(
+            //                    'import QtQuick 1.1; Image {onStatusChanged: { if (status == Image.Ready) QuestJs.loadImage();}}',
+            //                    container,
+            //                    "interior_item" + i.toString());
             interior_item = component.createObject(container);
         }
 
@@ -461,7 +464,22 @@ function checkScene()
     }
 
     if(found_counter == scene_items.length)
-        nextScene();
+    {
+        if((act_scene_counter + 1) < current_act.scenes.length)
+        {
+            act_scene_counter++;
+            current_scene = current_act.scenes[act_scene_counter];
+            clearScene();
+            drawScene();
+            info_view.visible = true;
+
+            nextScene();
+        }
+        else
+        {
+         nextAct();
+        }
+    }
 }
 
 function checkCollisions(mouseX, mouseY)
@@ -477,15 +495,11 @@ function checkCollisions(mouseX, mouseY)
             {
                 tmp_item = scene_item_map[scene_items[i]];
 
-//                console.log("found");
                 if(tmp_item)
                 {
-//                    tmp_item.found = true;
-//                    console.log("found");
-
-                                            showDetail(tmp_item,
-                                                       mouseX,
-                                                       mouseY);
+                    showDetail(tmp_item,
+                               mouseX,
+                               mouseY);
                 }
 
 
@@ -574,10 +588,17 @@ function nextQuest()
 {
     var tmp_number = parseInt(current_episode_count, 10);
     if((tmp_number + 1) <= all_episode_count)
-   {
-        stories_view.path_episode_id = (tmp_number + 1).toString();
+    {
+//        stories_view.path_episode_id = (tmp_number + 1).toString();
+        stories_listview.incrementCurrentIndex();
+        quest_menu.visible = false;
         getQuest();
-   }
+    }
+    else
+    {
+        stories_view.visible = true;
+        quest_menu.visible = false;
+    }
 }
 
 function activateItem(index)

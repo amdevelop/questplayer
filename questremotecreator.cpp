@@ -101,8 +101,19 @@ void QuestRemoteCreator::getManifest(QString request)
 
 void QuestRemoteCreator::slotFinished(QNetworkReply* reply)
 {
+    QString quest_data = m_declarative_root_object->property(m_current_property.toLatin1()).toString();
+    QString quest_data_recv = QString::fromUtf8(reply->readAll());
+
+    if(quest_data != quest_data_recv)
+    {
     m_declarative_root_object->setProperty(m_current_property.toLatin1(),
-                                           QString::fromUtf8(reply->readAll()));
+                                           quest_data_recv);
+    }
+    else
+    {
+        m_declarative_root_object->setProperty("direct_start_flag",
+                                               true);
+    }
 }
 
 void QuestRemoteCreator::slotGetStoryManifest(QString story)
