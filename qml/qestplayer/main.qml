@@ -26,6 +26,8 @@ Rectangle {
     property bool direct_start: false
     property bool direct_start_flag: false
 
+    property int show_load_indicator: 0
+
     onStories_jsonChanged:
     {
         QuestJs.initStoriesMenu();
@@ -41,6 +43,7 @@ Rectangle {
         if(direct_start_flag)
         {
             startNewGame();
+
             direct_start_flag = false;
             direct_start = true;
         }
@@ -89,15 +92,43 @@ Rectangle {
 
         stories_view.visible = false;
 
-        //        quest_menu.visible = true;
-        //        anim.start();
+        tryToStart();
+    }
 
-        QuestJs.startQuest();
+    function tryToStart()
+    {
+        if(show_load_indicator > 0)
+        {
+            show_load_indicator--;
+
+            if(show_load_indicator == 0)
+                QuestJs.startQuest();
+        }
     }
 
     function loadImage()
     {
         QuestJs.loadImage();
+    }
+
+
+    Rectangle {
+        id: load_indicator
+
+        color: "black"
+        anchors.fill: parent
+        z: 1000
+
+        visible: show_load_indicator != 0
+
+
+        AnimatedImage {
+            anchors.centerIn: parent
+
+            source: "qrc:/img/320.GIF"
+
+            playing: parent.visible
+        }
     }
 
     // QUEST ITEMS !!!
@@ -149,7 +180,7 @@ Rectangle {
             easing.type: Easing.InOutQuad;
 
             from: container.width
-            to: container.width - pause_button.width
+            to: container.width - pause_button.width - 10
         }
 
         NumberAnimation {
@@ -159,7 +190,7 @@ Rectangle {
             duration: 100;
             easing.type: Easing.InOutQuad;
 
-            from: container.width - pause_button.width
+            from: container.width - pause_button.width - 10
             to: container.width
         }
 
@@ -168,17 +199,19 @@ Rectangle {
             height: parent.height
 
             onClicked: {
-                if(quest_menu.visible === true)
-                    quest_menu.visible = false;
-                else
-                {
-                    item_menu.visible = false;
+//                if(quest_menu.visible === true)
+//                    quest_menu.visible = false;
+//                else
+//                {
+                item_menu.visible = false;
 
-                    quest_menu.visible = true;
-                    anim.start();
-                    pause_hide_anim.start();
-                    item_menu_hide_anim.start();
-                }
+                quest_menu.visible = true;
+                anim.start();
+                pause_hide_anim.start();
+                item_menu_hide_anim.start();
+
+                timer_scene_progress.stop();
+                //                }
             }
         }
     }
@@ -248,6 +281,64 @@ Rectangle {
 
 
 
+    Rectangle {
+        id: scene_time
+
+        anchors.top: pause_button.bottom
+        anchors.horizontalCenter: pause_button.horizontalCenter
+
+        width: text_minutes.width + text_points.width + text_seconds.width
+        height: text_minutes.height
+
+        color: "transparent"
+
+        property int m_value: 0
+
+        Text {
+            property int m_value: (parent.m_value - parent.m_value % 60) / 60
+            property string m_value_str: m_value.toString()
+
+            id: text_minutes
+            anchors.left: parent.left
+            color: "white"
+            font.pixelSize: 30
+
+            text: (m_value === 0)?"00":(m_value_str.length == 1)?("0" + m_value_str):m_value_str
+        }
+
+        Text {
+            id: text_points
+            text: ":"
+            anchors.left: text_minutes.right
+            color: "white"
+            font.pixelSize: 30
+        }
+
+        Text {
+            property int m_value: parent.m_value % 60
+            property string m_value_str: m_value.toString()
+
+            id: text_seconds
+            anchors.left: text_points.right
+            color: "white"
+            font.pixelSize: 30
+
+            text: (m_value === 0)?"00":(m_value_str.length == 1)?("0" + m_value_str):m_value_str
+        }
+    }
+
+
+    Timer {
+        id: timer_scene_progress
+
+        interval: 1000
+        repeat: true
+
+        onTriggered: {
+            QuestJs.updateSceneTimer();
+        }
+    }
+
     // ==== МЕНЮ ПАУЗЫ ====
     // прямоугольник главного меню квеста (который выпадает при Esc)
     Rectangle
@@ -307,6 +398,8 @@ Rectangle {
                         quest_menu.visible = false;
                         pause_show_anim.start();
                         item_menu_show_anim.start();
+
+                        timer_scene_progress.start();
                     }
                 }
             }
@@ -418,14 +511,15 @@ Rectangle {
         z: 520
 
         width: 100
-        height: container.height
+        height: container.height - container.height * 0.1
 
-        opacity: 0.9
+        opacity: 0.8
         color: "#ccc"
 
         visible: false
 
         anchors.left: container.left
+        anchors.verticalCenter: container.verticalCenter
 
         NumberAnimation on x { id: anim_item_menu; from: -width; to: 0; duration: 200; easing.type: Easing.OutQuint}
 
@@ -598,8 +692,6 @@ Rectangle {
 
             color: "black"
         }
-
-
 
         Timer {
             id: timer_animation_show
@@ -846,7 +938,6 @@ Rectangle {
             height: parent.height
         }
 
-
         Flickable {
             id : cover_flick
 
@@ -867,12 +958,32 @@ Rectangle {
 
                 id: story_cover
 
+                onStatusChanged: {
+                    if(status == Image.Loading)
+                        menu_image_loader.visible = true;
+                    else if(status == Image.Ready)
+                    {
+                        menu_image_loader.visible = false;
+
+                        tryToStart();
+                    }
+                }
+
                 source: server_name +
                         path_separator +
                         stories_view.path +
                         path_separator +
                         img_file_name;
             }
+        }
+
+        AnimatedImage {
+            id: menu_image_loader
+            source: "qrc:/img/712.GIF"
+            playing: visible
+
+            y: (top_area_rect.height + (container.height - (top_area_rect.height + social_rect.height + text_description.height + text_title.height)) / 2) - height / 2
+            x: (container.width - stories_listview.width) / 2 - width / 2
         }
 
         Rectangle {
@@ -995,6 +1106,8 @@ Rectangle {
                     onClicked: {
                         if(stories_view.mode === "stories")
                         {
+                            menu_image_loader.visible = true;
+
                             episodes_json = ""
                             container.getStoryManifest(stories_view.path)
                         }

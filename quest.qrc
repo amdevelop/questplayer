@@ -13,5 +13,7 @@
         <file>img/pause_button.PNG</file>
         <file>qml/qestplayer/FbShare.qml</file>
         <file>qml/qestplayer/TwShare.qml</file>
+        <file>img/320.GIF</file>
+        <file>img/712.GIF</file>
     </qresource>
 </RCC>

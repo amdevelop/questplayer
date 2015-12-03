@@ -9,6 +9,8 @@
 
 #include <QGraphicsBlurEffect>
 
+//#define PLAYER_RELEASE
+
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
     QScopedPointer<QApplication> app(createApplication(argc, argv));
@@ -49,17 +51,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
                                dv.rootObject(),
                                QuestRemoteCreator::ModeOnline);
 
-//    QFile file(QString("quests") + QDir::separator() + QString("quest_manifest.json"));
-
-//    if(file.open(QIODevice::ReadOnly))
-//    {
-//        dv.rootObject()->setProperty("stories_json", file.readAll());
-//    }
-//    else
-//        exit(1);
-
     dv.show();
-//    viewer.showExpanded();
 
     return app->exec();
 }

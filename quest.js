@@ -88,6 +88,7 @@ var info_show_type = "";
 var all_episode_count = -1;
 var current_episode_count = -1;
 
+var scene_timer = 0;
 
 function initQuest(current_number)
 {
@@ -131,6 +132,9 @@ function clearScene()
 
     fiction_text.text = "";
     fiction_text_preview.text = "";
+
+    timer_scene_progress.stop();
+    scene_time.m_value = 0;
 }
 
 function clearGame()
@@ -161,6 +165,9 @@ function gameOver()
 
     pause_hide_anim.start();
     item_menu_hide_anim.start();
+    if(item_menu.visible == true)
+        item_menu.visible = false;
+
 }
 
 function infoShown()
@@ -182,9 +189,13 @@ function infoShown()
     }
     else if(info_show_type === "scene_end")
     {
+        timer_animation_show.stop();
+
         fiction_flickable.visible = false;
 
         info_view.visible = false;
+
+        timer_scene_progress.start();
     }
 }
 
@@ -220,6 +231,11 @@ function skip()
     }
 
     infoShown();
+}
+
+function updateSceneTimer()
+{
+    scene_time.m_value++;
 }
 
 function nextAct()
@@ -581,7 +597,8 @@ function initEpisodesMenu()
 
 function getQuest()
 {
-    container.getEpisodeData(stories_view.path)
+    container.getEpisodeData(stories_view.path);
+    container.show_load_indicator++;
 }
 
 function nextQuest()
@@ -593,6 +610,7 @@ function nextQuest()
         stories_listview.incrementCurrentIndex();
         quest_menu.visible = false;
         getQuest();
+        container.show_load_indicator++;
     }
     else
     {
