@@ -714,6 +714,8 @@ Rectangle {
 
             color: "white"
 
+            textFormat: Text.RichText
+
             onLinkActivated: {
                 fiction_text_preview.visible = false;
                 fiction_flickable.visible = false;
