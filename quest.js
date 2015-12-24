@@ -196,6 +196,8 @@ function infoShown()
         info_view.visible = false;
 
         timer_scene_progress.start();
+
+        anim_background_expand.start();
     }
 }
 
@@ -292,7 +294,7 @@ function nextScene()
                 if(description[description.length - 1] === ".")
                     description = description.substring(0, description.length - 1);
 
-                description += "...<br><a href=\"read_more\">read more</a>"
+                description += "... <br> <a href=\"read_more\">read more</a>"
                 fiction_text.text = text_array.join();
             }
 
@@ -387,8 +389,9 @@ function drawScene()
                 base_path +
                 current_scene.background;
 
-    background_image.width = container.width;
-    background_image.height = container.height;
+    background_image.width = container.width;  // + container.width * 0.1;
+    background_image.koef = (576 / 720);
+    //    background_image.height = background_image.width * (576 / 720); // container.height;
 
     var i;
     var item_counter = 0;
@@ -416,7 +419,7 @@ function drawScene()
             //                    'import QtQuick 1.1; Image {onStatusChanged: { if (status == Image.Ready) QuestJs.loadImage();}}',
             //                    container,
             //                    "interior_item" + i.toString());
-            interior_item = component.createObject(container);
+            interior_item = component.createObject(background_image);
         }
 
         interior_item.source =
@@ -426,11 +429,17 @@ function drawScene()
 
 
 
-        interior_item.x = current_item.scene_x * container.width;
-        interior_item.y = current_item.scene_y * container.height;
+        interior_item.scene_x =
+                current_item.scene_x; // * background_image.width;
+        interior_item.scene_y =
+                current_item.scene_y; //  * background_image.height;
 
-        interior_item.width = current_item.scene_scale_x * container.width;
-        interior_item.height = current_item.scene_scale_y * container.height;
+
+        interior_item.scene_scale_x =
+                current_item.scene_scale_x; //  * background_image.width;
+        interior_item.scene_scale_y =
+                current_item.scene_scale_y; //  * background_image.height;
+
 
         interior_item.visible = true;
 
@@ -506,8 +515,10 @@ function checkCollisions(mouseX, mouseY)
     for(i = 0; i < scene_items.length; i++)
     {
         if(!scene_items[i].found)
-            if(scene_items[i].contains(mouseX, mouseY,
-                                       container.width, container.height))
+            if(scene_items[i].contains(mouseX,
+                                       mouseY,
+                                       background_image.width,
+                                       background_image.height))
             {
                 tmp_item = scene_item_map[scene_items[i]];
 
@@ -541,11 +552,25 @@ function showDetail(item_data, startX, startY)
 
     item_window.width = item_data.width;
     item_window.height = item_data.height;
-    item_window.x = item_data.x;
-    item_window.y = item_data.y;
+
+    var point = item_data.mapToItem(container,
+                                    item_data.width / 2,
+                                    item_data.height / 2);
+
+    if(point != null)
+    {
+        item_window.x = point.x;
+        item_window.y = point.y;
+    }
+    else
+    {
+        item_window.x = item_data.x;
+        item_window.y = item_data.y;
+    }
+
     item_window.z = 10000;
 
-    item_window.koef = item_data.width / item_data.height;
+//    item_window.koef = item_data.width / item_data.height;
 
     item_image.visible = true;
     item_window.visible = true;

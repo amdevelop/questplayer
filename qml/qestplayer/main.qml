@@ -132,19 +132,47 @@ Rectangle {
     }
 
     // QUEST ITEMS !!!
-    Image {
-        id: background_image
-        smooth: true
-        source: ""
-    }
 
-    MouseArea {
-        width: parent.width
-        height: parent.height
+    Flickable {
+        anchors.fill: parent
 
-        onClicked:
-        {
-            QuestJs.checkCollisions(mouseX, mouseY);
+        contentWidth: background_image.width
+        contentHeight: background_image.height
+
+        boundsBehavior: Flickable.StopAtBounds
+
+        contentX: (background_image.width - container.width) / 2
+        contentY: (background_image.height - container.height) / 2
+
+        Image {
+            id: background_image
+            smooth: true
+            source: ""
+
+            property real koef: 0
+
+            height: width * koef
+
+            NumberAnimation {
+                id: anim_background_expand
+                target: background_image
+                property: "width"
+                duration: 1500
+                easing.type: Easing.OutExpo
+
+                from: background_image.width
+                to: background_image.width + background_image.width * 0.1
+            }
+        }
+
+        MouseArea {
+            width: parent.width
+            height: parent.height
+
+            onClicked:
+            {
+                QuestJs.checkCollisions(mouseX, mouseY);
+            }
         }
     }
 
@@ -695,7 +723,7 @@ Rectangle {
 
         Timer {
             id: timer_animation_show
-            interval: 2000
+            interval: 1000
             repeat: true
             onTriggered: {console.log("LL");QuestJs.infoShown();}
         }
@@ -717,22 +745,29 @@ Rectangle {
             textFormat: Text.RichText
 
             onLinkActivated: {
-                fiction_text_preview.visible = false;
-                fiction_flickable.visible = false;
-                fiction_flickable.visible = true;
             }
 
             NumberAnimation on opacity {
                 id: anim_fiction_text_show;
                 from: 0; to: 1;
-                duration: 1000;
+                duration: 500;
                 easing.type: Easing.Linear
             }
             NumberAnimation on opacity {
                 id: anim_fiction_text_hide;
                 from: 1; to: 0;
-                duration: 1000;
+                duration: 500;
                 easing.type: Easing.Linear
+            }
+
+            MouseArea {
+                anchors.fill: parent
+
+                onClicked: {
+                    fiction_text_preview.visible = false;
+                    fiction_flickable.visible = false;
+                    fiction_flickable.visible = true;
+                }
             }
         }
 
@@ -817,13 +852,13 @@ Rectangle {
             NumberAnimation on opacity {
                 id: anim_info_text_show;
                 from: 0; to: 1;
-                duration: 1000;
+                duration: 500;
                 easing.type: Easing.Linear
             }
             NumberAnimation on opacity {
                 id: anim_info_text_hide;
                 from: 1; to: 0;
-                duration: 1000;
+                duration: 500;
                 easing.type: Easing.Linear
             }
         }
@@ -896,7 +931,7 @@ Rectangle {
                 y: container.height / 2 - item_image.height / 2
 
                 width: container.width * 0.2
-                height: width * koef
+                height: width // * koef
             }
         }
 
