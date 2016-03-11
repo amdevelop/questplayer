@@ -21,6 +21,7 @@ class QuestRemoteCreator : public QObject
     QChar separator();
     void getManifest(QString request);
 
+
 public:
     enum WorkMode
     {
@@ -44,6 +45,10 @@ public slots:
     void slotFinished(QNetworkReply*);
     void slotGetStoryManifest(QString);
     void slotGetEpisodeData(QString);
+
+    void slotShowAd();
+    void slotHideAd();
+
 };
 
 #endif // QUESTREMOTECREATOR_H

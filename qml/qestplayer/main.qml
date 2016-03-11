@@ -80,6 +80,10 @@ Rectangle {
             }
             event.accepted = true;
         }
+        else if (event.key === Qt.Key_Back)
+        {
+
+        }
     }
 
     function startNewGame()
@@ -151,7 +155,7 @@ Rectangle {
 
             property real koef: 0
 
-            height: width * koef
+//            height: width * koef
 
             NumberAnimation {
                 id: anim_background_expand
@@ -239,6 +243,7 @@ Rectangle {
                 item_menu_hide_anim.start();
 
                 timer_scene_progress.stop();
+
                 //                }
             }
         }
@@ -379,12 +384,18 @@ Rectangle {
         width: container.width
         height: container.height
 
-        // opacity: 0.9
         color: "transparent"
 
         visible: false
 
         z: 540
+
+        onVisibleChanged: {
+            if(visible === true)
+                container.showAd();
+            else
+                container.hideAd();
+        }
 
         Rectangle {
             id: pause_rectangle
@@ -404,6 +415,8 @@ Rectangle {
         }
 
         Column {
+
+            id: buttons_column
 
             spacing: 5
 
@@ -505,8 +518,11 @@ Rectangle {
 
             color: "white"
 
-            y: (container.height * (1/3)) / 2
-            x: container.width / 2 - width / 2
+//            y: (container.height * (1/3)) / 2
+//            x: container.width / 2 - width / 2
+
+            anchors.horizontalCenter: buttons_column.horizontalCenter
+            anchors.bottom: buttons_column.top
 
             width: pause_back_img.width
             horizontalAlignment: Text.AlignHCenter
@@ -520,7 +536,7 @@ Rectangle {
             property: "opacity"
             id: anim;
             from: 0;
-            to: 0.5;
+            to: 0.9;
             duration: 450;
             // собственно характер выпадания определяется
             // этой курвой
@@ -612,6 +628,13 @@ Rectangle {
         visible: false
 
         z: 530
+
+        onVisibleChanged: {
+            if(visible === true)
+                container.showAd();
+            else
+                container.hideAd();
+        }
 
         Image {
             id: fiction_background
@@ -1323,4 +1346,6 @@ Rectangle {
 
     signal getStoryManifest(string story_id)
     signal getEpisodeData(string path)
+    signal showAd()
+    signal hideAd()
 }

@@ -90,6 +90,8 @@ var current_episode_count = -1;
 
 var scene_timer = 0;
 
+var activity_stack = [];
+
 function initQuest(current_number)
 {
     current_episode_count = current_number;
@@ -104,12 +106,16 @@ function initQuest(current_number)
 }
 
 function startQuest() {
+
     next_button.visible = false;
     resume_button.visible = true;
     restart_button.visible = false;
 
     if(current_act == null)
+    {
+        container.showAd();
         nextAct();
+    }
 }
 
 function clearScene()
@@ -197,7 +203,7 @@ function infoShown()
 
         timer_scene_progress.start();
 
-        anim_background_expand.start();
+        //anim_background_expand.start();
     }
 }
 
@@ -390,7 +396,8 @@ function drawScene()
                 current_scene.background;
 
     background_image.width = container.width;  // + container.width * 0.1;
-    background_image.koef = (576 / 720);
+    background_image.height = container.height;  // + container.width * 0.1;
+//    background_image.koef = (576 / 720);
     //    background_image.height = background_image.width * (576 / 720); // container.height;
 
     var i;
@@ -463,10 +470,18 @@ function drawScene()
             scene_items[scene_items.length] = polygon_item;
             scene_item_map[polygon_item] = interior_item;
 
-            interior_item.z = subject_z++;
+            if(current_item.z === null)
+                interior_item.z = subject_z++;
+            else
+                interior_item.z = current_item.z
         }
         else
-            interior_item.z = interior_z++;
+        {
+            if(current_item.z === null)
+                interior_item.z = subject_z++;
+            else
+                interior_item.z = current_item.z
+        }
 
         scene_interior_list[scene_interior_list.length] = interior_item;
     }
@@ -648,3 +663,10 @@ function activateItem(index)
 {
 }
 
+function pushActivity()
+{
+}
+
+function popActivity()
+{
+}

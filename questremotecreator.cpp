@@ -7,6 +7,8 @@
 #include <QFile>
 #include <QDir>
 
+#include <QAndroidJniObject>
+
 #include "defines.h"
 
 QuestRemoteCreator::QuestRemoteCreator(const QString & server_name,
@@ -53,6 +55,14 @@ QuestRemoteCreator::QuestRemoteCreator(const QString & server_name,
     connect(m_declarative_root_object,
             SIGNAL(getEpisodeData(QString)),
             SLOT(slotGetEpisodeData(QString)));
+
+    connect(m_declarative_root_object,
+            SIGNAL(showAd()),
+            SLOT(slotShowAd()));
+
+    connect(m_declarative_root_object,
+            SIGNAL(hideAd()),
+            SLOT(slotHideAd()));
 
     m_man = new QNetworkAccessManager(this);
     connect(m_man,
@@ -135,3 +145,11 @@ void QuestRemoteCreator::slotGetEpisodeData(QString path)
                 P_MANIFEST_QUEST);
 }
 
+void QuestRemoteCreator::slotShowAd()
+{
+  QAndroidJniObject::callStaticMethod<void>("org/qtproject/example/admobqt/AdMobQtActivity", "showAd");
+}
+void QuestRemoteCreator::slotHideAd()
+{
+  QAndroidJniObject::callStaticMethod<void>("org/qtproject/example/admobqt/AdMobQtActivity", "hideAd");
+}

@@ -3,7 +3,7 @@ folder_01.source = qml/qestplayer
 folder_01.target = qml
 DEPLOYMENTFOLDERS = folder_01
 
-QT += network
+QT += network androidextras
 
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
@@ -55,7 +55,10 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat
+    android/gradlew.bat \
+    android/project.properties \
+    android/src/org/qtproject/example/admobqt/AdMobQtActivity.java \
+    old_activity
 
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
