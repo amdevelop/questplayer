@@ -470,14 +470,14 @@ function drawScene()
             scene_items[scene_items.length] = polygon_item;
             scene_item_map[polygon_item] = interior_item;
 
-            if(current_item.z === null)
+            if(current_item.z == null)
                 interior_item.z = subject_z++;
             else
                 interior_item.z = current_item.z
         }
         else
         {
-            if(current_item.z === null)
+            if(current_item.z == null)
                 interior_item.z = subject_z++;
             else
                 interior_item.z = current_item.z

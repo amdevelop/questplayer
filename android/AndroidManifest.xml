@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <manifest package="ru.matal.questinteractive" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0" android:versionCode="12" android:installLocation="auto">
-    <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="Quest Interactive" android:icon="@drawable/icon">
+    <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="Санрайз Бич Quest Interactive" android:icon="@drawable/icon">
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
-        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.example.admobqt.AdMobQtActivity" android:label="Quest Interactive" android:screenOrientation="landscape" android:launchMode="singleTop">
+        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.example.admobqt.AdMobQtActivity" android:label="Санрайз Бич Quest Interactive" android:screenOrientation="landscape" android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -42,7 +42,7 @@
             <meta-data android:name="android.app.background_running" android:value="false"/>
             <!-- Background running -->
         </activity>
-        <activity android:name="com.google.android.gms.ads.AdActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" android:label="Quest Interactive">
+        <activity android:name="com.google.android.gms.ads.AdActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" android:label="Санрайз Бич Quest Interactive">
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
         </activity>
     </application>

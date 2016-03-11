@@ -54,17 +54,47 @@ Rectangle {
         QuestJs.initEpisodesMenu();
     }
 
+    function backPressHandler()
+    {
+        if(item_window.visible == true)
+        {
+            item_window.clickedItemWindow();
+        }
+        else if(info_view.visible == true)
+        {
+            return;
+        }
+        else if(quest_menu.visible == true)
+        {
+            if(resume_button.visible == true)
+            {
+                quest_menu.clickedReusme();
+            }
+            if(next_button.visible == true)
+            {
+                quest_menu.clickedMainMenu();
+            }
+        }
+        else if(stories_view.visible == true)
+        {
+            if(stories_view.mode == "stories")
+            {
+                Qt.quit();
+            }
+            else if(stories_view.mode == "episodes")
+            {
+                stories_view.back();
+            }
+        }
+        else if(background_image.visible == true)
+        {
+            pause_button.clickedPause();
+        }
+    }
+
     Keys.onPressed: {
         if (event.key === Qt.Key_Escape) {
-            if(quest_menu.visible)
-                quest_menu.visible = false;
-            else
-            {
-                item_menu.visible = false;
-
-                quest_menu.visible = true;
-                anim.start();
-            }
+            backPressHandler();
             event.accepted = true;
         }
         else if (event.key === Qt.Key_Tab) {
@@ -82,7 +112,8 @@ Rectangle {
         }
         else if (event.key === Qt.Key_Back)
         {
-
+            backPressHandler();
+            event.accepted = true;
         }
     }
 
@@ -226,6 +257,18 @@ Rectangle {
             to: container.width
         }
 
+        function clickedPause()
+        {
+            item_menu.visible = false;
+
+            quest_menu.visible = true;
+            anim.start();
+            pause_hide_anim.start();
+            item_menu_hide_anim.start();
+
+            timer_scene_progress.stop();
+        }
+
         MouseArea {
             width: parent.width
             height: parent.height
@@ -235,14 +278,11 @@ Rectangle {
 //                    quest_menu.visible = false;
 //                else
 //                {
-                item_menu.visible = false;
+                //item_menu.visible = false;
 
-                quest_menu.visible = true;
-                anim.start();
-                pause_hide_anim.start();
-                item_menu_hide_anim.start();
+                parent.clickedPause();
 
-                timer_scene_progress.stop();
+               // timer_scene_progress.stop();
 
                 //                }
             }
@@ -414,6 +454,28 @@ Rectangle {
             }
         }
 
+        function clickedReusme()
+        {
+            QuestJs.startQuest();
+            quest_menu.visible = false;
+            pause_show_anim.start();
+            item_menu_show_anim.start();
+
+            timer_scene_progress.start();
+        }
+
+        function clickedMainMenu()
+        {
+            QuestJs.clearGame();
+            stories_view.visible = true;
+            quest_menu.visible = false;
+
+            quest_json = "";
+
+            pause_show_anim.start();
+            item_menu_show_anim.start();
+        }
+
         Column {
 
             id: buttons_column
@@ -435,12 +497,13 @@ Rectangle {
 
                     onClicked:
                     {
-                        QuestJs.startQuest();
-                        quest_menu.visible = false;
-                        pause_show_anim.start();
-                        item_menu_show_anim.start();
+                        quest_menu.clickedReusme();
+//                        QuestJs.startQuest();
+//                        quest_menu.visible = false;
+//                        pause_show_anim.start();
+//                        item_menu_show_anim.start();
 
-                        timer_scene_progress.start();
+//                        timer_scene_progress.start();
                     }
                 }
             }
@@ -475,14 +538,16 @@ Rectangle {
 
                     onClicked:
                     {
-                        QuestJs.clearGame();
-                        stories_view.visible = true;
-                        quest_menu.visible = false;
+                        quest_menu.clickedMainMenu();
 
-                        quest_json = "";
+//                        QuestJs.clearGame();
+//                        stories_view.visible = true;
+//                        quest_menu.visible = false;
 
-                        pause_show_anim.start();
-                        item_menu_show_anim.start();
+//                        quest_json = "";
+
+//                        pause_show_anim.start();
+//                        item_menu_show_anim.start();
                     }
                 }
             }
@@ -927,20 +992,29 @@ Rectangle {
             wrapMode: Text.WordWrap
         }
 
+        function clickedItemWindow()
+        {
+            visible = false;
+            QuestJs.checkScene();
+            item_image.visible = false;
+            item_text.visible = false;
+        }
+
         MouseArea{
             width: parent.width
             height: parent.height
 
             onClicked: {
-                if(parent.visible === true)
-                {
-                    parent.visible = false;
+                parent.clickedItemWindow();
+//                if(parent.visible === true)
+//                {
+//                    parent.visible = false;
 
-                    QuestJs.checkScene();
-                }
+//                    QuestJs.checkScene();
+//                }
 
-                item_image.visible = false;
-                item_text.visible = false;
+//                item_image.visible = false;
+//                item_text.visible = false;
             }
         }
 
